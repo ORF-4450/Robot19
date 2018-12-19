@@ -1,0 +1,76 @@
+Port and Button Assignments.
+
+CAN Ports
+Port	Device			Description
+-----------------------------------------------------------------------------------
+1		CanTalon		Left front drive motor.
+2		CanTalon		Left rear drive motor.
+3		CanTalon		Right front drive motor.
+4		CanTalon		Right rear drive motor.
+
+
+PWM Ports
+Port	Device			Description
+-----------------------------------------------------------------------------------
+
+PCM 0 Ports
+Port	Device blk-pos	Description
+-----------------------------------------------------------------------------------
+0		ValveDA 0		A side high/low speed shifter. Set Low speed. 
+1		ValveDA	0		B side high/low speed shifter. Set High speed.
+
+
+PCM 1 Ports
+Port	Device blk-pos	Description
+-----------------------------------------------------------------------------------
+
+
+Digital I/O Ports
+Port	Device			Description
+-----------------------------------------------------------------------------------
+
+
+Analog I/O Ports
+Port	Device			Description
+-----------------------------------------------------------------------------------
+0		Pressure Sensor	Report air pressure.
+
+Left Joystick
+Button Name				Function
+-----------------------------------------------------------------------------------
+TRIGGER					Shift gear box low/high.
+
+Right Joystick
+Button Name				Function
+-----------------------------------------------------------------------------------
+TRIGGER					Toggle alternate driving mode.
+
+
+Utility Joystick
+Button Name				Function
+-----------------------------------------------------------------------------------
+
+
+LaunchPad
+Button Name				Function
+-----------------------------------------------------------------------------------
+BUTTON_RED				Shift gears.
+BUTTON_GREEN			Reset wheel encoder.
+ROCKER_LEFT_FRONT		Switch Cameras.
+ROCKER_LEFT_BACK		Toggle drive talon brake mode.
+
+
+Dashboard Indicators/Controls
+Name					Type			Description
+-----------------------------------------------------------------------------------
+AutoTarget				boolean			True when targeting code is running.
+TargetLocked			boolean			True when targeting completed with target
+                                        detected.
+Disabled				boolean			True when robot is disabled.
+Auto Mode				boolean			True when robot is in autonomous mode.
+Teleop Mode				boolean			True when robot is in tele-operated mode.
+FMS						boolean			True when robot is connected to the FMS.
+Overload				boolean			True when steering assist is on.
+AirPressure				Number			Is set to the current air pressure in psi.
+Brakes					boolean			True when drive Talons are in brake mode.
+		  

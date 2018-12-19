@@ -1,0 +1,5 @@
+{
+    "wpilib.autoSaveOnDeploy": true,
+    "wpilib.autoStartRioLog": true,
+    "editor.fontSize": 13
+}

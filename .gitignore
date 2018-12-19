@@ -1,0 +1,18 @@
+# Java class files
+*.class
+
+# Generated files
+bin/
+build/
+dist/
+
+# Misc temp files
+
+# Backups
+*.zip
+
+# Gradle cache
+.gradle/
+
+# Eclipse settings
+.settings
