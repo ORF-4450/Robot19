@@ -13,7 +13,8 @@ Operates the robot "TBA" for FRC game "DESTINATION DEEP SPACE".
 	and change the version of RobotLib to the current version available on Jitpack.com for ORF-4450.
 5) If you change the version, right click on the project in Eclipse and select Gradle/Refresh Gradle Project.
 6) Execute the run configuration called Build Robot19 to compile the project. First compile will take a while
-	as gradle will download a number of components and libraries to the local cache.
+	as gradle will download a number of components and libraries to the local cache. Note: the run configurations
+	will need to have their Java Home path set to the specific jdk directory on your PC.
 
 ### If RobotLib gets an update:
 1) Do steps 4, 5 & 6 above with the new version number. You do not need to download RobotLib, gradle will do it.
