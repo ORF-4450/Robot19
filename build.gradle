@@ -3,6 +3,7 @@ plugins {
     id "eclipse"
     id "idea"
     id "edu.wpi.first.GradleRIO" version "2019.0.0-alpha-3"
+    id "org.ajoberstar.grgit" version "3.0.0"
 }
 
 def TEAM = 4450
@@ -48,30 +49,25 @@ dependencies {
     compile "com.github.ORF-4450:RobotLib:v2.3"
 }
 
-// The following functions require a git repository for the project. Uncomment the lines and remove
-// the return "" once you have your repo created.
+// These next definitions (branch and hash) attempt to find extra information to add to the the manifest of
+// the robot program jar file.
+
+// Either the name of the current branch, or an empty string if no git repo is found.
 def branch = { ->
-//    def stdout = new ByteArrayOutputStream()
-    
-//    exec {
-//        commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
-//        standardOutput = stdout
-//    }
-    
-//    return stdout.toString().trim()
-return ""
+    if (grgit == null) { // If there's no git repo.
+        return ""
+    }
+
+    return grgit.branch.current().getName()
 }
 
+// Either the short hash of the last commit or an empty string if no git repo is found.
 def hash = { ->
-//    def stdout = new ByteArrayOutputStream()
+    if (grgit == null) { // If there's no git repo.
+        return ""
+    }
     
-//    exec {
-//        commandLine 'git', 'rev-parse', '--short', 'HEAD'
-//        standardOutput = stdout
-//    }
-    
-//    return stdout.toString().trim()
-return ""
+    return grgit.head().abbreviatedId
 }
 
 // Setting up robot program Jar File. In this case, adding all libraries into the main jar ('fat jar')
