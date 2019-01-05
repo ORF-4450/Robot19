@@ -2,29 +2,47 @@ plugins {
     id "java"
     id "eclipse"
     id "idea"
-    id "edu.wpi.first.GradleRIO" version "2019.0.0-alpha-3"
+    id "edu.wpi.first.GradleRIO" version "2019.1.1"
     id "org.ajoberstar.grgit" version "3.0.0"
 }
 
-def TEAM = 4450
-def ROBOT_CLASS = "Team4450.Robot19.Robot"
+def ROBOT_MAIN_CLASS = "Team4450.Robot19.Main"
 
+// If you want the build task to automatically attempt to deploy to the robot, leave this as is.
+// If you are using VSCode to deploy, it is recommended to comment this line out and use the Deploy command in VSCode.
 build.finalizedBy 'deploy'
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
 deploy {
     targets {
-        target("roborio", edu.wpi.first.gradlerio.frc.RoboRIO) {
-            team = TEAM
+        roboRIO("roborio") {
+            // Team number is loaded either from the .wpilib/wpilib_preferences.json
+            // or from command line. If not found an exception will be thrown.
+            // You can use getTeamOrDefault(team) instead of getTeamNumber if you
+            // want to store a team number in this file.
+            team = frc.getTeamOrDefault(4450)
         }
     }
     artifacts {
-        artifact('frcJava', edu.wpi.first.gradlerio.frc.FRCJavaArtifact) {
+        frcJavaArtifact('frcJava') {
             targets << "roborio"
+            // Debug can be overridden by command line, for use with VSCode
+            debug = frc.getDebugOrDefault(false)
         }
-   }
+        // Built in artifact to deploy arbitrary files to the roboRIO.
+        fileTreeArtifact('frcStaticFileDeploy') {
+            // The directory below is the local directory to deploy
+            files = fileTree(dir: 'src/main/deploy')
+            // Deploy to RoboRIO target, into /home/lvuser/deploy
+            targets << "roborio"
+            directory = '/home/lvuser'
+        }
+    }
 }
+
+// Set this to true to enable desktop support.
+def includeDesktopSupport = false
 
 // Setup eclipse classpath settings, so the javadoc and sources are available in eclipse
 eclipse {
@@ -34,19 +52,20 @@ eclipse {
     }
 }
 
-// Look in local maven cache first, then maven central, then jitpack for dependent libraries.
+// Look in local maven cache first, then maven central for dependent libraries.
 repositories {
 	mavenLocal()
 	mavenCentral()
-	maven { url 'https://jitpack.io' }
 }
 
-// Defining dependencies. In this case, WPILib (+ friends), CTRE Phoenix (Talon SRX), NavX, RobotLib
-// and the local pathfinder project jar. RobotLib is downloaded from Jitpack by version number or commit id. 
-// Change 'local' to desired RobotLib version, commit id or master-SNAPSHOT for most recent.
+// Defining dependencies. In this case, WPILib (+ friends), vendor libraries from the vendordeps folder,
+// and JUnit for unit testing.
 dependencies {
-    compile wpilib()
-    compile "com.github.ORF-4450:RobotLib:v2.3"
+    compile wpi.deps.wpilib()
+    compile wpi.deps.vendor.java()
+    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+    testCompile 'junit:junit:4.12'
 }
 
 // These next definitions (branch and hash) attempt to find extra information to add to the the manifest of
@@ -74,17 +93,13 @@ def hash = { ->
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class. Add version information to jar manifest.
 jar {
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-        manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_CLASS)
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
         
-        manifest {
-         	attributes("Branch": branch())
-        	attributes("Commit": hash())
-           	attributes("Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
-        	attributes("User": System.getProperty("user.name"))
-    	}
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.9'
+    manifest {
+     	attributes("Branch": branch())
+      	attributes("Commit": hash())
+       	attributes("Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
+     	attributes("User": System.getProperty("user.name"))
+    }
 }

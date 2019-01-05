@@ -1,0 +1,21 @@
+{
+    "fileName": "robotLib.json",
+    "name": "ORF-4450-RobotLib",
+    "version": "local",
+    "uuid": "27d5b603-ec71-4576-b639-4eb46f1d9f66",
+    "mavenUrls": [
+        "https://jitpack.io",
+        "https://repo1.maven.org/maven2/",
+        "http://devsite.ctr-electronics.com/maven/release/"
+    ],
+    "jsonUrl": "https://raw.githubusercontent.com/ORF-4450/RobotLib/master/robotLib.json",
+    "javaDependencies": [
+        {
+            "groupId": "com.github.ORF-4450",
+            "artifactId": "RobotLib",
+            "version": "local"
+        }
+    ],
+    "jniDependencies": [],
+    "cppDependencies": []
+}
