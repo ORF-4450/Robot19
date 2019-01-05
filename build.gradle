@@ -52,25 +52,20 @@ eclipse {
     }
 }
 
-// Look in local maven cache first, then maven central, then jitpack for dependent libraries.
+// Look in local maven cache first, then maven central for dependent libraries.
 repositories {
 	mavenLocal()
 	mavenCentral()
-	maven { url 'https://jitpack.io' }
 }
 
 // Defining dependencies. In this case, WPILib (+ friends), vendor libraries from the vendordeps folder,
 // and JUnit for unit testing.
-// RobotLib is downloaded from Jitpack by version number or commit id. 
-// Change 'RobotLib:<VERSION>' to desired RobotLib version, commit id or master-SNAPSHOT for most recent.
 dependencies {
     compile wpi.deps.wpilib()
     compile wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
     testCompile 'junit:junit:4.12'
-	
-    compile "com.github.ORF-4450:RobotLib:local" //TODO: Update RobotLib to 2019 libraries. Robot19 doesn't compile until then.
 }
 
 // These next definitions (branch and hash) attempt to find extra information to add to the the manifest of
