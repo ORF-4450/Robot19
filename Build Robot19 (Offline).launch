@@ -6,7 +6,7 @@
 <booleanAttribute key="build_scans_enabled" value="false"/>
 <stringAttribute key="gradle_distribution" value="GRADLE_DISTRIBUTION(WRAPPER)"/>
 <stringAttribute key="gradle_user_home" value=""/>
-<stringAttribute key="java_home" value="C:\Program Files (x86)\Java\jdk1.8.0_144"/>
+<stringAttribute key="java_home" value=" C:\Users\Public\frc2019\jdk"/>
 <listAttribute key="jvm_arguments"/>
 <booleanAttribute key="offline_mode" value="false"/>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
