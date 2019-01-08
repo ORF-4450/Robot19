@@ -10,7 +10,7 @@ def ROBOT_MAIN_CLASS = "Team4450.Robot19.Main"
 
 // If you want the build task to automatically attempt to deploy to the robot, leave this as is.
 // If you are using VSCode to deploy, it is recommended to comment this line out and use the Deploy command in VSCode.
-build.finalizedBy 'deploy'
+// build.finalizedBy 'deploy'
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
