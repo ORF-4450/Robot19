@@ -13,7 +13,7 @@ public class Autonomous
 	private final Robot			robot;
 	// Next statement only used with LabView dashboard.
 	//private int					program = (int) SmartDashboard.getNumber("AutoProgramSelect",0);
-	private int					program;
+	private int					program = 0;
 	private final GearBox		gearBox;
 	
 	private static SendableChooser<Integer>	autoChooser;
@@ -51,8 +51,8 @@ public class Autonomous
 		autoChooser = new SendableChooser<Integer>();
 		
 		autoChooser.setName("Auto Program");
-		autoChooser.addDefault("No Program", 0);
-		autoChooser.addDefault("Auto Program 1", 1);
+		autoChooser.setDefaultOption("No Program", 0);
+		autoChooser.addOption("Auto Program 1", 1);
 		
 		SmartDashboard.putData(autoChooser);
 	}
@@ -61,7 +61,11 @@ public class Autonomous
 
 	public void execute()
 	{
-		program = autoChooser.getSelected();
+		try
+		{
+			program = autoChooser.getSelected();
+		}
+		catch (Exception e)	{ Util.logException(e); }
 		
 		Util.consoleLog("Alliance=%s, Location=%d, Program=%d, FMS=%b, msg=%s", robot.alliance.name(), robot.location, program, 
 				Devices.ds.isFMSAttached(), robot.gameMessage);
