@@ -1,5 +1,7 @@
-# Robot19
+# Robot19-RAC
 FRC Team 4450 2019 Robot Control program.
+
+##This Mr. Corn's example.
 
 This is the 2019 competition robot control program created by the Olympia Robotics Federation (FRC Team 4450).
 Operates the robot "TBA" for FRC game "DESTINATION DEEP SPACE".
@@ -13,6 +15,13 @@ Operates the robot "TBA" for FRC game "DESTINATION DEEP SPACE".
 ### If RobotLib gets an update:
 1) download the RobotLib.json file from the RobotLib Github repo and drop it into the vendordeps folder inside the project folder. Build the project.
 ****************************************************************************************************************
+Version 19.2-RAC
+
+*	Add Lift and Pickup classes in anticipation of those systems.
+*	Convert Autonomous, Teleop and GearBox classes to Singleton pattern.
+
+R. Corn January 29, 2019
+
 Version 19.1
 
 *	Major updates for compatibility with all the changes made by FIRST in 2019 Kickoff release.
