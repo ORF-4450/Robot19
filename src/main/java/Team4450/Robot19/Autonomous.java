@@ -18,20 +18,45 @@ public class Autonomous
 	
 	private static SendableChooser<Integer>	autoChooser;
 	
-	Autonomous(Robot robot)
+	// This variable used to make this class is a singleton.
+	
+	public static Autonomous autonomous = null;
+	
+	// Private constructor prevents multiple instances from being created.
+		
+	private Autonomous(Robot robot)
 	{
 		Util.consoleLog();
 		
 		this.robot = robot;
 		
-		gearBox = new GearBox(robot);
+		gearBox = GearBox.getInstance(robot);
+		
+		Util.consoleLog("Automomous created!");
 	}
-
+	
+	/**
+	* Get reference to the single instance of this class shared by any caller of
+	* this method.
+	* @return Reference to single shared instance of this class.
+	*/
+	public static Autonomous getInstance(Robot robot) 
+	{
+		if (autonomous == null) autonomous = new Autonomous(robot);
+		
+		return autonomous;
+	}
+	
+	/**
+	* Release any resources allocated and the singleton object.
+	*/
 	public void dispose()
 	{
 		Util.consoleLog();
 		
 		if (gearBox != null) gearBox.dispose();
+		
+		autonomous = null;
 	}
 	
 	private boolean isAutoActive()

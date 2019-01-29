@@ -1,6 +1,7 @@
 /**
  * Manage gear box shifting.
  */
+
 package Team4450.Robot19;
 
 import Team4450.Lib.*;
@@ -12,18 +13,41 @@ public class GearBox
 	private Robot		robot;
 	private boolean		lowSpeed,  highSpeed;
 	
-	public GearBox	(Robot robot)
+	// This variable used to make this class is a singleton.
+	
+	public static GearBox gearBox = null;
+	
+	private GearBox (Robot robot)
 	{
 		Util.consoleLog();
 		
 		this.robot = robot;
 		
 		lowSpeed();
+		
+		Util.consoleLog("GearBox created!");
+	}
+		
+	/**
+	* Get reference to the single instance of this class shared by any caller of
+	* this method.
+	* @return Reference to single shared instance of this class.
+	*/	
+	public static GearBox getInstance(Robot robot)
+	{
+		if (gearBox == null) gearBox = new GearBox(robot);
+		
+		return gearBox;		
 	}
 	
+	/**
+	 * Release any resources and the shared instance of this class.
+	 */
 	public void dispose()
 	{
 		Util.consoleLog();
+		
+		gearBox = null;
 	}
 	
 	private void displayStatus()

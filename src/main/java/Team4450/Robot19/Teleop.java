@@ -19,10 +19,14 @@ class Teleop
 	private boolean				autoTarget, altDriveMode;
 	private Vision				vision;
 	private GearBox				gearBox;
+	
+	// This variable used to make this class is a singleton.
+	
+	public static Teleop teleop = null;
+	
+	// Private constructor prevents multiple instances from being created.
 
-	// Constructor.
-
-	Teleop(Robot robot)
+	private Teleop(Robot robot)
 	{
 		Util.consoleLog();
 		
@@ -31,13 +35,26 @@ class Teleop
 
 		this.robot = robot;
 
-		gearBox = new  GearBox(robot);
+		gearBox = GearBox.getInstance(robot);
 		
 		vision = Vision.getInstance(robot);
 	}
-
-	// Free all objects that need it.
-
+	
+	/**
+	* Get reference to the single instance of this class shared by any caller of
+	* this method.
+	* @return Reference to single shared instance of this class.
+	*/
+	public static Teleop getInstance(Robot robot) 
+	{
+		if (teleop == null) teleop = new Teleop(robot);
+		
+		return teleop;
+	}
+	
+	/**
+	* Release any resources allocated and the singleton object.
+	*/
 	void dispose()
 	{
 		Util.consoleLog();
@@ -47,6 +64,8 @@ class Teleop
 		if (utilityStick != null) utilityStick.dispose();
 		if (launchPad != null) launchPad.dispose();
 		if (gearBox != null) gearBox.dispose();
+		
+		teleop = null;
 	}
 
 	void OperatorControl() throws Exception
@@ -81,6 +100,7 @@ class Teleop
 
 		//Example on how to track more buttons:
 		launchPad.AddControl(LaunchPadControlIDs.BUTTON_GREEN);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_YELLOW);
 		launchPad.addLaunchPadEventListener(new LaunchPadListener());
 		launchPad.Start();
 
@@ -283,6 +303,12 @@ class Teleop
 					Devices.leftEncoder.reset();
 					Devices.rightEncoder.reset();
 					break;
+					
+				case BUTTON_YELLOW:
+					if (Devices.frontLiftValve.isOpen())
+						Devices.frontLiftValve.Close();
+					else
+						Devices.frontLiftValve.Open();
 					
 				default:
 					break;

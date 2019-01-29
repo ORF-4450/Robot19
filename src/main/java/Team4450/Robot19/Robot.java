@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 @SuppressWarnings("deprecation")
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "ORF19-01.29.19-01";
+  static final String  	PROGRAM_NAME = "RAC19-01.29.19-01";
 
   public Properties		robotProperties;
   
@@ -233,7 +233,7 @@ public class Robot extends SampleRobot
              
     	  // Start autonomous process contained in the Autonomous class.
         
-    	  autonomous = new Autonomous(this);
+    	  autonomous = Autonomous.getInstance(this);
         
     	  autonomous.execute();
 
@@ -243,7 +243,7 @@ public class Robot extends SampleRobot
       
       finally
       {
-      	  autonomous.dispose();
+      	  if (autonomous != null) autonomous.dispose();
 
       	  SmartDashboard.putBoolean("Auto Mode", false);
       	  Util.consoleLog("end");
@@ -277,7 +277,7 @@ public class Robot extends SampleRobot
         
           // Start operator control process contained in the Teleop class.
         
-          teleOp = new Teleop(this);
+          teleOp =Teleop.getInstance(this);
        
           teleOp.OperatorControl();
 
