@@ -3,13 +3,15 @@ package Team4450.Robot19;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.*;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import Team4450.Lib.NavX;
 import Team4450.Lib.SRXMagneticEncoderRelative;
 import Team4450.Lib.SRXMagneticEncoderRelative.PIDRateType;
 import Team4450.Lib.Util;
 import Team4450.Lib.ValveDA;
-
+import Team4450.Lib.ValveSA;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,7 +19,6 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,6 +32,8 @@ public class Devices
 	  // Motor CAN ID/PWM port assignments (1=left-front, 2=left-rear, 3=right-front, 4=right-rear)
 	  public static WPI_TalonSRX		LFCanTalon, LRCanTalon, RFCanTalon, RRCanTalon;
 	  
+	  public static CANSparkMax			leftSpark, rightSpark;
+	  
 	  public static DifferentialDrive	robotDrive;
 
 	  public final static Joystick      utilityStick = new Joystick(2);	
@@ -40,18 +43,21 @@ public class Devices
 
 	  public final static Compressor	compressor = new Compressor(0);	// Compressor class represents the PCM.
 
-	  public final static ValveDA		highLowValve = new ValveDA(0);	// For gearbox.
-
+	  public final static ValveDA		highLowValve = new ValveDA(0);		// For gearbox.
+	  public final static ValveDA		frontLiftValve = new ValveDA(2);	// For front lift.
+	  public final static ValveDA		rearLiftValve = new ValveDA(4);		// For rear lift.
+	  public final static ValveSA		hatchKickValve = new ValveSA(1, 4);	// Kick of hatch.
+	  
 	  public final static AnalogInput	pressureSensor = new AnalogInput(0);
 	  
-	  public final static PowerDistributionPanel	PDP = new PowerDistributionPanel();
+	  public final static PowerDistributionPanel	pdp = new PowerDistributionPanel();
 
 	  public final static DriverStation				ds = DriverStation.getInstance();
 
 	  public static NavX				navx;
 
-	  // Wheel encoder (regular type) is plugged into dio port 0:
-	  // orange=+5v blue=signal, dio port 1 black=gnd yellow=signal. 
+	  // Encoder (regular type) is plugged into dio port 0:
+	  // orange=+5v blue=signal, dio port 1: black=gnd yellow=signal. 
 	  
 	  // SRX magnetic encoder plugged into a CAN Talon.
 	  public static SRXMagneticEncoderRelative	leftEncoder, rightEncoder;
@@ -114,6 +120,9 @@ public class Devices
 		  
 		  //robotDrive = new DifferentialDrive(LeftGroup, RightGroup);
 		  robotDrive = new DifferentialDrive(LRCanTalon, RRCanTalon);
+		  
+		  leftSpark = new CANSparkMax(0, MotorType.kBrushless);
+		  rightSpark = new CANSparkMax(0, MotorType.kBrushless);
 	  }
 
 	  // Initialize and Log status indication from CANTalon. If we see an exception

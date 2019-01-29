@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 @SuppressWarnings("deprecation")
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "ORF19-01.22.19-01";
+  static final String  	PROGRAM_NAME = "ORF19-01.29.19-01";
 
   public Properties		robotProperties;
   
@@ -122,7 +122,7 @@ public class Robot extends SampleRobot
 
    		// Reset PDB & PCM sticky faults.
       
-   		Devices.PDP.clearStickyFaults();
+   		Devices.pdp.clearStickyFaults();
    		Devices.compressor.clearAllPCMStickyFaults();
    		
    		// Configure motor controllers and RobotDrive.
@@ -228,7 +228,7 @@ public class Robot extends SampleRobot
     	  Devices.compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
 
     	  // Reset persistent fault flags in control system modules.
-    	  Devices.PDP.clearStickyFaults();
+    	  Devices.pdp.clearStickyFaults();
     	  Devices.compressor.clearAllPCMStickyFaults();
              
     	  // Start autonomous process contained in the Autonomous class.
@@ -269,7 +269,7 @@ public class Robot extends SampleRobot
       	  getMatchInformation();
       	  
     	  // Reset persistent fault flags in control system modules.
-          Devices.PDP.clearStickyFaults();
+          Devices.pdp.clearStickyFaults();
           Devices.compressor.clearAllPCMStickyFaults();
 
           // This code turns off the automatic compressor management if requested by DS.

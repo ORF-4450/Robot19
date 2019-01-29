@@ -103,7 +103,7 @@ public class Autonomous
 		
 		// Update the robot heading indicator on the DS.
 
-		// Next stmt only used with labview DB.
+		// Next statement only used with labview DB.
 		//SmartDashboard.putNumber("Gyro", Devices.navx.getHeadingInt());
 		
 		SmartDashboard.updateValues();

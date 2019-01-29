@@ -8,6 +8,9 @@ Port	Device			Description
 3		CanTalon		Right front drive motor.
 4		CanTalon		Right rear drive motor.
 
+5		CanSpark		Left H drive motor.
+6		CanSpark		Right H drive motor.
+
 
 PWM Ports
 Port	Device			Description
@@ -18,11 +21,22 @@ Port	Device blk-pos	Description
 -----------------------------------------------------------------------------------
 0		ValveDA 0		A side high/low speed shifter. Set Low speed. 
 1		ValveDA	0		B side high/low speed shifter. Set High speed.
+2		ValveDA	1		A side front lift. Extends.
+3		ValveDA	1		B Side front lift. Retracts.
+4		ValveDA	2		A side rear lift. Extends.
+5		ValveDA	2		B Side rear lift. Retracts.
+6		ValveDA 3		A side
+7		ValveDA 3		B side
 
 
 PCM 1 Ports
 Port	Device blk-pos	Description
 -----------------------------------------------------------------------------------
+0		ValveDA 4		A side
+1		ValveDA 4		B Side
+2		ValveSA 5		A side
+3		ValveDA 5		B side
+4		ValveSA 6		A side Hatch Kicker.
 
 
 Digital I/O Ports
@@ -35,16 +49,20 @@ Port	Device			Description
 -----------------------------------------------------------------------------------
 0		Pressure Sensor	Report air pressure.
 
+
 Left Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
 TRIGGER					Shift gear box low/high.
+Y Axis					Forward/Backward tank driving.
+
 
 Right Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
 TRIGGER					Toggle alternate driving mode.
-
+Y Axis					Forward/Backward tank driving.
+X Axis					Left/Right H driving.
 
 Utility Joystick
 Button Name				Function
