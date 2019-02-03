@@ -96,12 +96,21 @@ public class Autonomous
 				Devices.ds.isFMSAttached(), robot.gameMessage);
 		LCD.printLine(2, "Alliance=%s, Location=%d, FMS=%b, Program=%d, msg=%s", robot.alliance.name(), robot.location, 
 				Devices.ds.isFMSAttached(), program, robot.gameMessage);
-		
-		Devices.robotDrive.setSafetyEnabled(false);
 
 		// Initialize wheel encoders.
-		Devices.rightEncoder.reset();
-		Devices.leftEncoder.reset();
+		
+		Util.consoleLog("at reset le=%d  re=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get());
+		
+		Devices.rightEncoder.setStatusFramePeriod(100);
+		Devices.leftEncoder.setStatusFramePeriod(100);
+
+		int rightError = Devices.rightEncoder.reset(2);
+		int leftError = Devices.leftEncoder.reset(110);
+		
+		Util.consoleLog("after reset le=%d  re=%d  sl=%d  sr=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get(),
+						leftError, rightError);
+		
+		Util.consoleLog("after delay le=%d  re=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get());
 		
        // Set NavX yaw tracking to 0.
 		Devices.navx.resetYaw();

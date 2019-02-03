@@ -31,7 +31,7 @@ class Teleop
 		Util.consoleLog();
 		
 		// Motor safety turned off during initialization.
-		Devices.robotDrive.setSafetyEnabled(false);
+		//Devices.robotDrive.setSafetyEnabled(false);
 
 		this.robot = robot;
 
@@ -76,7 +76,7 @@ class Teleop
 		int		angle;
 
 		// Motor safety turned off during initialization.
-		Devices.robotDrive.setSafetyEnabled(false);
+		//Devices.robotDrive.setSafetyEnabled(false);
 
 		Util.consoleLog();
 
@@ -167,13 +167,18 @@ class Teleop
 
 			utilY = utilityStick.GetY();
 
+			LCD.printLine(2, "leftenc=%d  rightenc=%d", 0, Devices.rightEncoder.get());
 			LCD.printLine(3, "leftY=%.3f  rightY=%.3f  utilY=%.3f", leftStick.GetY(), rightStick.GetY(), utilY);
 			LCD.printLine(4, "leftY=%.3f  rightY=%.3f  utilY=%.3f", leftY, rightY, utilY);
 			LCD.printLine(5, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), 
 					Devices.navx.getTotalYaw(), Devices.navx.getYawRate(), Devices.navx.getHeading());
 			LCD.printLine(10, "pressureV=%.2f  psi=%d", robot.monitorCompressorThread.getVoltage(), 
 					robot.monitorCompressorThread.getPressure());
-
+			
+			// set H drive motors.
+			
+			Devices.hDrive.set(rightX);
+			
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
 
@@ -198,7 +203,7 @@ class Teleop
 
 						LCD.printLine(5, "angle=%d", angle);
 
-						// Invert angle for backwards movemment.
+						// Invert angle for backwards movement.
 
 						if (rightY < 0) angle = -angle;
 

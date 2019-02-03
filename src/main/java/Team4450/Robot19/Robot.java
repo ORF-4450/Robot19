@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 @SuppressWarnings("deprecation")
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC19-01.29.19-01";
+  static final String  	PROGRAM_NAME = "RAC19-02.02.19-02";
 
   public Properties		robotProperties;
   
@@ -40,7 +40,7 @@ public class Robot extends SampleRobot
   Thread               	monitorBatteryThread, monitorPDPThread;
   MonitorCompressor		monitorCompressorThread;
   CameraFeed			cameraThread;
-  Vision				vision = Vision.getInstance(this);
+  Vision				vision;
   
   Teleop 				teleOp;
   Autonomous 			autonomous;
@@ -165,6 +165,8 @@ public class Robot extends SampleRobot
        	cameraThread = CameraFeed.getInstance(); 
        	cameraThread.start();
        	
+       	vision = Vision.getInstance(this);
+       	
        	// Configure autonomous program choices sendable chooser.
        	
        	Autonomous.setAutoChoices();
@@ -216,6 +218,9 @@ public class Robot extends SampleRobot
           
           currentRobotState = RobotState.auto;
 
+          // Motor safety turned off during autonomous. 		
+          Devices.robotDrive.setSafetyEnabled(false);
+
     	  LCD.clearAll();
     	  LCD.printLine(1, "Mode: Autonomous");
             
@@ -259,6 +264,9 @@ public class Robot extends SampleRobot
     	  Util.consoleLog();
           
           currentRobotState = RobotState.teleop;
+
+          // Motor safety turned off during initialization.
+          Devices.robotDrive.setSafetyEnabled(false);
 
     	  LCD.clearAll();
       	  LCD.printLine(1, "Mode: Teleop");

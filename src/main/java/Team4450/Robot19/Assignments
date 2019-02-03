@@ -11,10 +11,17 @@ Port	Device			Description
 5		CanSpark		Left H drive motor.
 6		CanSpark		Right H drive motor.
 
+7		Victor SPX		Left winch motor.
+8		Victor SPX		Right winch motor.
+9		Victor SPX		Pickup motor.
+10		Victor SPX		Ball spit motor.
+
 
 PWM Ports
 Port	Device			Description
 -----------------------------------------------------------------------------------
+0		Servo			Linear Actuator - hatch mechanism deploy.
+
 
 PCM 0 Ports
 Port	Device blk-pos	Description
