@@ -38,6 +38,7 @@ public class Devices
 	  
 	  public static DifferentialDrive		robotDrive;
 	  public static	SpeedControllerGroup 	hDrive;
+	  public static SpeedControllerGroup	winchDrive;
 	  
 	  public final static Joystick      utilityStick = new Joystick(2);	
 	  public final static Joystick      leftStick = new Joystick(0);	
@@ -73,7 +74,11 @@ public class Devices
 	  
 	  private static boolean			talonBrakeMode;
 	  
-	  // Create RobotDrive object for CAN Talon controllers.
+	  // Private constructor prevents creation of any instances of this "static" class.
+	  
+	  private Devices() {}
+	  
+	  // Initialize motor controllers, groups and encoders.
 	  
 	  public static void InitializeCANTalonDrive()
 	  {
@@ -148,6 +153,9 @@ public class Devices
 		  rightWinch.setNeutralMode(NeutralMode.Brake);
 		  pickupMotor.setNeutralMode(NeutralMode.Brake);
 		  ballSpit.setNeutralMode(NeutralMode.Brake);
+
+		  // Setup a SpeedControllerGroup for the left and right winch drive motors.
+	     winchDrive = new SpeedControllerGroup(leftWinch, rightWinch);
 	  }
 
 	  // Initialize and Log status indication from CANTalon. If we see an exception
