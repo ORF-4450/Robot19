@@ -48,9 +48,9 @@ public class Devices
 	  public final static Compressor	compressor = new Compressor(0);	// Compressor class represents the PCM.
 
 	  public final static ValveDA		highLowValve = new ValveDA(0);		// For gearbox.
-	  public final static ValveDA		frontLiftValve = new ValveDA(2);	// For front lift.
-	  public final static ValveDA		rearLiftValve = new ValveDA(4);		// For rear lift.
-	  public final static ValveDA		pickupValve = new ValveDA(6);		// For rear lift.
+	  public final static ValveDA		frontClimbValve = new ValveDA(2);	// For front lift.
+	  public final static ValveDA		rearClimbValve = new ValveDA(4);	// For rear lift.
+	  public final static ValveDA		pickupValve = new ValveDA(6);		// For pickup arm.
 	  public final static ValveSA		hatchKickValve = new ValveSA(1, 4);	// Kick of hatch.
 	  
 	  public final static Servo			hatchDeployServo = new Servo(0);	// PWM port 0.
@@ -66,8 +66,9 @@ public class Devices
 	  // Encoder (regular type) is plugged into dio port 0:
 	  // orange=+5v blue=signal, dio port 1: black=gnd yellow=signal. 
 	  public final static Encoder		winchEncoder = new Encoder(0, 1, true, EncodingType.k4X);
+	  public static boolean				winchEncoderEnabled = true;
 	  
-	  public static DigitalInput		winchSwitch = new DigitalInput(0);
+	  public static DigitalInput		winchSwitch = new DigitalInput(2);
 
 	  // SRX magnetic encoder plugged into a CAN Talon.
 	  public static SRXMagneticEncoderRelative	leftEncoder, rightEncoder;
@@ -118,6 +119,9 @@ public class Devices
 		  // talon is set to some setpoint and will move to that point using the encoder or
 	      // you set a velocity setpoint and talon will run at that velocity. This is
 		  // onboard PID control.
+	      
+	      // For 2019 robot, put rear talons into a differential drive object and set the
+	      // front talons to follow the rears. Not going to get to closed loop control...
 		  
 		  LFCanTalon.set(ControlMode.Follower, LRCanTalon.getDeviceID());
 		  RFCanTalon.set(ControlMode.Follower, RRCanTalon.getDeviceID());

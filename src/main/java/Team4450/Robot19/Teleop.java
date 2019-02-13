@@ -19,6 +19,9 @@ class Teleop
 	private boolean				autoTarget, altDriveMode;
 	private Vision				vision;
 	private GearBox				gearBox;
+	private Lift				lift;
+	private Pickup				pickup;
+	private Climber				climber;
 	
 	// This variable used to make this class is a singleton.
 	
@@ -38,6 +41,12 @@ class Teleop
 		gearBox = GearBox.getInstance(robot);
 		
 		vision = Vision.getInstance(robot);
+		
+		lift = Lift.getInstance(robot);
+		
+		pickup = Pickup.getInstance(robot);
+		
+		climber = Climber.getInstance(robot);
 	}
 	
 	/**
@@ -64,6 +73,9 @@ class Teleop
 		if (utilityStick != null) utilityStick.dispose();
 		if (launchPad != null) launchPad.dispose();
 		if (gearBox != null) gearBox.dispose();
+		if (lift != null) lift.dispose();
+		if (pickup != null) pickup.dispose();
+		if (climber != null) climber.dispose();
 		
 		teleop = null;
 	}
@@ -167,22 +179,23 @@ class Teleop
 
 			utilY = utilityStick.GetY();
 
-			LCD.printLine(2, "leftenc=%d  rightenc=%d", 0, Devices.rightEncoder.get());
-			LCD.printLine(3, "leftY=%.3f  rightY=%.3f  utilY=%.3f", leftStick.GetY(), rightStick.GetY(), utilY);
-			LCD.printLine(4, "leftY=%.3f  rightY=%.3f  utilY=%.3f", leftY, rightY, utilY);
-			LCD.printLine(5, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), 
+			LCD.printLine(2, "leftenc=%d  rightenc=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get());
+			//LCD.printLine(3, "leftY=%.3f  rightY=%.3f  utilY=%.3f", leftStick.GetY(), rightStick.GetY(), utilY);
+			LCD.printLine(3, "leftY=%.3f  rightY=%.3f  rightX=%.3f  utilY=%.3f", leftY, rightY, rightX, utilY);
+			LCD.printLine(4, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), 
 					Devices.navx.getTotalYaw(), Devices.navx.getYawRate(), Devices.navx.getHeading());
 			LCD.printLine(10, "pressureV=%.2f  psi=%d", robot.monitorCompressorThread.getVoltage(), 
 					robot.monitorCompressorThread.getPressure());
 			
 			// set H drive motors.
 			
-			Devices.hDrive.set(rightX);
+			if (!autoTarget && rightStick.GetCurrentState(JoyStickButtonIDs.TRIGGER))
+			{
+				Devices.hDrive.set(rightX);
+			}
 			
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
-
-			//if (!autoTarget) robot.robotDrive.tankDrive(leftY, rightY);
 
 			// Two drive modes, full tank and alternate. Switch on right stick trigger.
 
@@ -233,11 +246,15 @@ class Teleop
 					//Devices.robotDrive.curvatureDrive(rightY, rightX, rightStick.GetLatchedState(JoyStickButtonIDs.TRIGGER));
 			}
 
+			// Set winch power.
+			
+			lift.setWinchPower(utilY);
+
 			// Update the robot heading indicator on the DS. Only for labview DB.
 
-			SmartDashboard.putNumber("Gyro", Devices.navx.getHeadingInt());
+			//SmartDashboard.putNumber("Gyro", Devices.navx.getHeadingInt());
 			
-			// Cause smartdashboard to update any registered Sendables, Gyro2.
+			// Cause smartdashboard to update any registered Sendables, including Gyro2.
 			
 			SmartDashboard.updateValues();
 
@@ -310,10 +327,10 @@ class Teleop
 					break;
 					
 				case BUTTON_YELLOW:
-					if (Devices.frontLiftValve.isOpen())
-						Devices.frontLiftValve.Close();
+					if (climber.isFrontExtended())
+						climber.retractFrontClimb(true);
 					else
-						Devices.frontLiftValve.Open();
+						climber.extendFrontClimb(true);
 					
 				default:
 					break;
@@ -344,7 +361,6 @@ class Teleop
     				
 	    		case ROCKER_LEFT_FRONT:
 					if (robot.cameraThread != null) robot.cameraThread.ChangeCamera();
-					//invertDrive = !invertDrive;
 	    			break;
 	    			
 				default:

@@ -28,10 +28,10 @@ Port	Device blk-pos	Description
 -----------------------------------------------------------------------------------
 0		ValveDA 0		A side high/low speed shifter. Set Low speed. 
 1		ValveDA	0		B side high/low speed shifter. Set High speed.
-2		ValveDA	1		A side front lift. Extends.
-3		ValveDA	1		B Side front lift. Retracts.
-4		ValveDA	2		A side rear lift. Extends.
-5		ValveDA	2		B Side rear lift. Retracts.
+2		ValveDA	1		A side front climb. Extends.
+3		ValveDA	1		B Side front climb. Retracts.
+4		ValveDA	2		A side rear climb. Extends.
+5		ValveDA	2		B Side rear climb. Retracts.
 6		ValveDA 3		A side
 7		ValveDA 3		B side
 
@@ -49,6 +49,9 @@ Port	Device blk-pos	Description
 Digital I/O Ports
 Port	Device			Description
 -----------------------------------------------------------------------------------
+0		encoder			winch encoder port 1.
+1		encoder			winch encoder port 2.
+2		Limit Switch	winch bottom detection.
 
 
 Analog I/O Ports
@@ -71,9 +74,11 @@ TRIGGER					Toggle alternate driving mode.
 Y Axis					Forward/Backward tank driving.
 X Axis					Left/Right H driving.
 
+
 Utility Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
+Y Axis					Lift winch motors. +/back goes up.
 
 
 LaunchPad
@@ -93,9 +98,10 @@ TargetLocked			boolean			True when targeting completed with target
                                         detected.
 Disabled				boolean			True when robot is disabled.
 Auto Mode				boolean			True when robot is in autonomous mode.
-Teleop Mode				boolean			True when robot is in tele-operated mode.
+Teleop Mode				boolean			True when robot is in teleop mode.
 FMS						boolean			True when robot is connected to the FMS.
 Overload				boolean			True when steering assist is on.
 AirPressure				Number			Is set to the current air pressure in psi.
 Brakes					boolean			True when drive Talons are in brake mode.
+HDrive					boolean			True when H drive is active.
 		  
