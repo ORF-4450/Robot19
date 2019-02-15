@@ -14,6 +14,7 @@ import Team4450.Lib.ValveDA;
 import Team4450.Lib.ValveSA;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
@@ -63,12 +64,15 @@ public class Devices
 
 	  public static NavX				navx;
 
-	  // Encoder (regular type) is plugged into dio port 0:
-	  // orange=+5v blue=signal, dio port 1: black=gnd yellow=signal. 
-	  public final static Encoder		winchEncoder = new Encoder(0, 1, true, EncodingType.k4X);
+	  // Touchless Encoder uses single channel on dio port 0.
+	  public final static Counter		winchEncoder = new Counter(0);
 	  public static boolean				winchEncoderEnabled = true;
+
+	  // Encoder (regular type) is plugged into dio port n:
+	  // orange=+5v blue=signal, dio port n+1: black=gnd yellow=signal. 
+	  public final static Encoder		hatchEncoder = new Encoder(1, 2, true, EncodingType.k4X);
 	  
-	  public static DigitalInput		winchSwitch = new DigitalInput(2);
+	  public static DigitalInput		winchSwitch = new DigitalInput(3);
 
 	  // SRX magnetic encoder plugged into a CAN Talon.
 	  public static SRXMagneticEncoderRelative	leftEncoder, rightEncoder;
