@@ -36,6 +36,8 @@ public class Pickup
 	*/
 	public void dispose()
 	{
+		Util.consoleLog();
+		
 		pickup =  null;
 	}
 	

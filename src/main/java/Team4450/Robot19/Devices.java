@@ -37,6 +37,8 @@ public class Devices
 	  
 	  public static CANSparkMax			leftSpark, rightSpark;
 	  
+	  public static Talon				hatchWinch;
+	  
 	  public static DifferentialDrive		robotDrive;
 	  public static	SpeedControllerGroup 	hDrive;
 	  public static SpeedControllerGroup	winchDrive;
@@ -70,9 +72,10 @@ public class Devices
 
 	  // Encoder (regular type) is plugged into dio port n:
 	  // orange=+5v blue=signal, dio port n+1: black=gnd yellow=signal. 
-	  public final static Encoder		hatchEncoder = new Encoder(1, 2, true, EncodingType.k4X);
+	  public final static Encoder		hatchEncoder = new Encoder(2, 3, true, EncodingType.k4X);
 	  
-	  public static DigitalInput		winchSwitch = new DigitalInput(3);
+	  public static DigitalInput		winchSwitch = new DigitalInput(4);
+	  public static DigitalInput		ballSwitch = new DigitalInput(5);
 
 	  // SRX magnetic encoder plugged into a CAN Talon.
 	  public static SRXMagneticEncoderRelative	leftEncoder, rightEncoder;
@@ -156,6 +159,7 @@ public class Devices
 		  rightWinch = new WPI_VictorSPX(8);
 		  pickupMotor = new WPI_VictorSPX(9);
 		  ballSpit = new WPI_VictorSPX(10);
+		  hatchWinch = new Talon(0);
 		  
 		  leftWinch.setNeutralMode(NeutralMode.Brake);
 		  rightWinch.setNeutralMode(NeutralMode.Brake);

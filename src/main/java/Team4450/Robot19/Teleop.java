@@ -92,8 +92,7 @@ class Teleop
 
 		Util.consoleLog();
 
-		LCD.printLine(1, "Mode: OperatorControl");
-		LCD.printLine(2, "All=%s, Start=%d, FMS=%b", robot.alliance.name(), robot.location, Devices.ds.isFMSAttached());
+		LCD.printLine(1, "Mode: teleop All=%s, Start=%d, FMS=%b", robot.alliance.name(), robot.location, Devices.ds.isFMSAttached());
 		
 		// Set synchronousPID as a sendable for testing.
 		SynchronousPID pidTest = new SynchronousPID(1,2,3,4);
@@ -179,11 +178,12 @@ class Teleop
 
 			utilY = utilityStick.GetY();
 
-			LCD.printLine(2, "leftenc=%d  rightenc=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get());
-			//LCD.printLine(3, "leftY=%.3f  rightY=%.3f  utilY=%.3f", leftStick.GetY(), rightStick.GetY(), utilY);
+			LCD.printLine(2, "leftenc=%d  rightenc=%d - wEnc=%d  hEnc=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get(), 
+					Devices.winchEncoder.get(), Devices.hatchEncoder.get());			
 			LCD.printLine(3, "leftY=%.3f  rightY=%.3f  rightX=%.3f  utilY=%.3f", leftY, rightY, rightX, utilY);
 			LCD.printLine(4, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), 
 					Devices.navx.getTotalYaw(), Devices.navx.getYawRate(), Devices.navx.getHeading());
+			LCD.printLine(5, "wEnc=%d  hEnc=%d", Devices.winchEncoder.get(), Devices.hatchEncoder.get());
 			LCD.printLine(10, "pressureV=%.2f  psi=%d", robot.monitorCompressorThread.getVoltage(), 
 					robot.monitorCompressorThread.getPressure());
 			

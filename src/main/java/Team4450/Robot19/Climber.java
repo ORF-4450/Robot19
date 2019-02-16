@@ -41,6 +41,12 @@ public class Climber
 	*/
 	public void dispose()
 	{
+		Util.consoleLog();
+		
+		retractFrontClimb(true);
+		
+		retractRearClimb();
+
 		climber =  null;
 	}
 	

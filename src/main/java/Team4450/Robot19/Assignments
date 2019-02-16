@@ -20,8 +20,7 @@ Port	Device			Description
 PWM Ports
 Port	Device			Description
 -----------------------------------------------------------------------------------
-0		Servo			Linear Actuator - hatch mechanism deploy.
-1		PWM Talon		Hatch lift motor.
+0		PWM Talon		Hatch lift motor.
 
 
 PCM 0 Ports
@@ -51,10 +50,12 @@ Digital I/O Ports
 Port	Device			Description
 -----------------------------------------------------------------------------------
 0		encoder			winch encoder (touchless).
-1		encoder			hatch encoder port 1.
-2		encoder			hatch encoder port 2.
-3		Limit Switch	winch bottom detection.
-
+1		reserved
+2		encoder			hatch encoder port 1.
+3		encoder			hatch encoder port 2.
+4		Limit Switch	winch bottom detection.
+5		Limit Switch	ball in delivery position detection. Note ball passes over
+                        switch and we have to detect when released to stop spit motor.
 
 Analog I/O Ports
 Port	Device			Description

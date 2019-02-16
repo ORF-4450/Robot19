@@ -9,7 +9,7 @@ public class Lift
 {
 	private Robot robot;
 	private boolean				holdingPosition, holdingHeight;
-	private final PIDController	liftPidController;
+	private final PIDController	liftPidController, hatchPidController;
 
 	// This variable used to make this class is a singleton.
 	
@@ -35,7 +35,10 @@ public class Lift
 		
 		liftPidController = new PIDController(0.0, 0.0, 0.0, Devices.winchEncoder, Devices.winchDrive);
 		
+		hatchPidController = new PIDController(0.0, 0.0, 0.0, Devices.hatchEncoder, Devices.hatchWinch);
+		
 		Devices.winchEncoder.reset();
+		Devices.hatchEncoder.reset();
 				
 		updateDS();
 		
@@ -51,6 +54,9 @@ public class Lift
 		
 		liftPidController.disable();
 		liftPidController.close();
+		
+		hatchPidController.disable();
+		hatchPidController.close();
 
 		lift =  null;
 	}
@@ -61,6 +67,8 @@ public class Lift
 	{
 		SmartDashboard.putBoolean("TargetLocked", holdingHeight);
 	}
+	
+	// Set lift winch motors to arbitrary power with top and bottom detection.
 	
 	public void setWinchPower(double power)
 	{
@@ -163,6 +171,33 @@ public class Lift
 		{
 			liftPidController.disable();
 			holdingPosition = false;
+		}
+	}
+	
+	// Automatically move hatch holder to specified encoder count and hold it there.
+	// count < 0 turns pid controller off.
+	
+	public void setHatchHeight(int count)
+	{
+		Util.consoleLog("%d", count);
+		
+		if (count >= 0)
+		{
+			// p,i,d values are a guess.
+			// f value is the motor power to apply to move to encoder target count.
+			// Setpoint is the target encoder count.
+			// The idea is that the difference between the current encoder count and the
+			// target count will apply power to bring the two counts together and stay there.
+			hatchPidController.setPID(0.0003, 0.00001, 0.0003, 0.0);
+			//liftPidController.setPID(0.0003, 0.0, 0.0, 0.0);
+			hatchPidController.setOutputRange(-1, 1);
+			hatchPidController.setSetpoint(count);
+			hatchPidController.setPercentTolerance(1);	// % error.
+			hatchPidController.enable();
+		}
+		else
+		{
+			hatchPidController.disable();
 		}
 	}
 }
