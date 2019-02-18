@@ -42,7 +42,7 @@ class Teleop
 		
 		vision = Vision.getInstance(robot);
 		
-		lift = Lift.getInstance(robot);
+		//lift = Lift.getInstance(robot);
 		
 		pickup = Pickup.getInstance(robot);
 		
@@ -126,6 +126,9 @@ class Teleop
 		//rightStick.AddButton(JoyStickButtonIDs.BUTTON_NAME_HERE);
 		rightStick.addJoyStickEventListener(new RightStickListener());
 		rightStick.Start();
+		
+		// Invert for h drive correct direction.
+		//rightStick.invertX(true);
 
 		utilityStick = new JoyStick(Devices.utilityStick, "UtilityStick", JoyStickButtonIDs.TRIGGER, this);
 		//Example on how to track button:
@@ -190,9 +193,9 @@ class Teleop
 			// set H drive motors.
 			
 			if (!autoTarget && rightStick.GetCurrentState(JoyStickButtonIDs.TRIGGER))
-			{
 				Devices.hDrive.set(rightX);
-			}
+			else
+				Devices.hDrive.set(0);
 			
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
@@ -248,7 +251,7 @@ class Teleop
 
 			// Set winch power.
 			
-			lift.setWinchPower(utilY);
+			//lift.setWinchPower(utilY);
 
 			// Update the robot heading indicator on the DS. Only for labview DB.
 

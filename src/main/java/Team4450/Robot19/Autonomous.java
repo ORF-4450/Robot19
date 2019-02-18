@@ -1,22 +1,25 @@
 
 package Team4450.Robot19;
 
+import java.io.File;
+
 import Team4450.Lib.*;
 import Team4450.Robot19.Devices;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import jaci.pathfinder.Pathfinder;
+import jaci.pathfinder.Trajectory;
+import jaci.pathfinder.followers.EncoderFollower;
 
 public class Autonomous
 {
 	private final Robot			robot;
-	// Next statement only used with LabView dashboard.
-	//private int					program = (int) SmartDashboard.getNumber("AutoProgramSelect",0);
-	private int					program = 0;
+	private AutoProgram			program = AutoProgram.NoProgram;
 	private final GearBox		gearBox;
 	
-	private static SendableChooser<Integer>	autoChooser;
+	private static SendableChooser<AutoProgram>	autoChooser;
 	
 	// This variable used to make this class is a singleton.
 	
@@ -73,12 +76,24 @@ public class Autonomous
 	{
 		Util.consoleLog();
 		
-		autoChooser = new SendableChooser<Integer>();
+		autoChooser = new SendableChooser<AutoProgram>();
 		
 		autoChooser.setName("Auto Program");
-		autoChooser.setDefaultOption("No Program", 0);
-		autoChooser.addOption("Auto Program 1", 1);
+		autoChooser.setDefaultOption("No Program", AutoProgram.NoProgram);
 		
+		//The naming convention is Alliance, Upper/Lower Rocket, The side of the rocket the robot is going to 
+		//from the perspective of the driver station
+		
+		autoChooser.addOption("Upper Close", AutoProgram.RocketUpClose);
+		autoChooser.addOption("Upper Middle", AutoProgram.RocketUpMiddle);
+		autoChooser.addOption("Upper Far", AutoProgram.RocketUpFar);
+		autoChooser.addOption("Down Close", AutoProgram.RocketDownClose);
+		autoChooser.addOption("Down Middle", AutoProgram.RocketDownMiddle);
+		autoChooser.addOption("Down Far", AutoProgram.RocketDownFar);
+		autoChooser.addOption("Middle Left", AutoProgram.RocketMiddlePathLeft);
+		autoChooser.addOption("Middle Right", AutoProgram.RocketMiddlePathRight);
+		autoChooser.addOption("PathFinder Test", AutoProgram.TestPathFinder);
+				
 		SmartDashboard.putData(autoChooser);
 	}
 
@@ -92,10 +107,10 @@ public class Autonomous
 		}
 		catch (Exception e)	{ Util.logException(e); }
 		
-		Util.consoleLog("Alliance=%s, Location=%d, Program=%d, FMS=%b, msg=%s", robot.alliance.name(), robot.location, program, 
-				Devices.ds.isFMSAttached(), robot.gameMessage);
-		LCD.printLine(2, "Alliance=%s, Location=%d, FMS=%b, Program=%d, msg=%s", robot.alliance.name(), robot.location, 
-				Devices.ds.isFMSAttached(), program, robot.gameMessage);
+		Util.consoleLog("Alliance=%s, Location=%d, Program=%s, FMS=%b, msg=%s", robot.alliance.name(), robot.location, 
+				program.name(), Devices.ds.isFMSAttached(), robot.gameMessage);
+		LCD.printLine(2, "Alliance=%s, Location=%d, FMS=%b, Program=%s, msg=%s", robot.alliance.name(), robot.location, 
+				Devices.ds.isFMSAttached(), program.name(), robot.gameMessage);
 
 		// Initialize wheel encoders.
 		
@@ -109,8 +124,6 @@ public class Autonomous
 		
 		Util.consoleLog("after reset le=%d  re=%d  sl=%d  sr=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get(),
 						leftError, rightError);
-		
-		Util.consoleLog("after delay le=%d  re=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get());
 		
        // Set NavX yaw tracking to 0.
 		Devices.navx.resetYaw();
@@ -130,9 +143,133 @@ public class Autonomous
 		// Determine which auto program to run as indicated by driver station.
 		switch (program)
 		{
-			case 0:		// No auto program.
+			case NoProgram:		// No auto program.
+				break;
+			
+			case RocketUpClose:
+				switch (robot.alliance)
+				{
+						case Red:
+						pathSelector(AutoProgram.RocketUpClose, DriverStation.Alliance.Red);
+						break;
+						case Blue:
+						pathSelector(AutoProgram.RocketUpClose, DriverStation.Alliance.Blue);
+						break;
+						case Invalid:
+						break;
+				}
 				break;
 
+			case RocketUpMiddle:
+				switch (robot.alliance)
+				{
+						case Red:
+						pathSelector(AutoProgram.RocketUpMiddle, DriverStation.Alliance.Red);
+						break;
+						case Blue:
+						pathSelector(AutoProgram.RocketUpMiddle, DriverStation.Alliance.Blue);
+						break;
+						case Invalid:
+						break;
+				}
+				break;
+
+			case RocketUpFar:
+				switch (robot.alliance)
+				{
+						case Red:
+						pathSelector(AutoProgram.RocketUpFar, DriverStation.Alliance.Red);
+						break;
+						case Blue:
+						pathSelector(AutoProgram.RocketUpFar, DriverStation.Alliance.Blue);
+						break;
+						case Invalid:
+						Util.consoleLog("Could not find alliance color!");
+						break;
+				}
+				break;
+				
+			case RocketDownClose:
+				switch (robot.alliance)
+				{
+						case Red:
+						pathSelector(AutoProgram.RocketDownClose, DriverStation.Alliance.Red);
+						break;
+						case Blue:
+						pathSelector(AutoProgram.RocketDownClose, DriverStation.Alliance.Blue);
+						break;
+						case Invalid:
+						Util.consoleLog("Could not find alliance color!");
+						break;
+				}
+					break;
+				
+			case RocketDownMiddle:
+				switch (robot.alliance)
+				{
+						case Red:
+						pathSelector(AutoProgram.RocketDownMiddle, DriverStation.Alliance.Red);
+						break;
+						case Blue:
+						pathSelector(AutoProgram.RocketDownMiddle, DriverStation.Alliance.Blue);
+						break;
+						case Invalid:
+						Util.consoleLog("Could not find alliance color!");
+						break;
+				}
+				break;
+			
+			case RocketDownFar:
+				switch (robot.alliance)
+				{
+						case Red:
+						pathSelector(AutoProgram.RocketDownFar, DriverStation.Alliance.Red);
+						break;
+						case Blue:
+						pathSelector(AutoProgram.RocketDownFar, DriverStation.Alliance.Blue);
+						break;
+						case Invalid:
+						Util.consoleLog("Could not find alliance color!");
+						break;
+				}
+				break;
+			
+			case RocketMiddlePathLeft:
+				switch (robot.alliance)
+				{
+						case Red:
+						pathSelector(AutoProgram.RocketMiddlePathLeft, DriverStation.Alliance.Red);
+						break;
+						case Blue:
+						pathSelector(AutoProgram.RocketMiddlePathLeft, DriverStation.Alliance.Blue);
+						break;
+						case Invalid:
+						Util.consoleLog("Could not find alliance color!");
+						break;
+				}
+				break;
+			
+			case RocketMiddlePathRight:
+				switch (robot.alliance)
+				{
+						case Red:
+						pathSelector(AutoProgram.RocketMiddlePathRight, DriverStation.Alliance.Red);
+						break;
+						case Blue:
+						pathSelector(AutoProgram.RocketMiddlePathRight, DriverStation.Alliance.Blue);
+						break;
+						case Invalid:
+						Util.consoleLog("Could not find alliance color!");
+						break;
+				}
+				break;
+			
+			case TestPathFinder:
+				//testPathfinder();
+				break;
+
+			default:
+				break;
 		}
 		
 		// Update the robot heading indicator on the DS.
@@ -147,6 +284,125 @@ public class Autonomous
 		Util.consoleLog("end");
 	}
 
+	 public enum AutoProgram
+	 {
+		NoProgram,
+		RocketUpClose,
+		RocketUpMiddle,
+		RocketUpFar,
+		RocketDownClose,
+		RocketDownMiddle,
+		RocketDownFar,
+		RocketMiddlePathLeft,
+		RocketMiddlePathRight,
+		TestPathFinder
+	}
+
+	private void pathSelector(AutoProgram pathName, DriverStation.Alliance allianceColor)
+	{
+		String rightPathFile;
+		String leftPathFile;
+		
+		rightPathFile = "/home/lvuser/output/" + allianceColor.toString() + pathName.toString()+ ".left.pf1.csv";
+		leftPathFile = "/home/lvuser/output/" + allianceColor.toString() + pathName.toString() + ".right.pf1.csv";
+		
+		Util.consoleLog("Left Path=%s  Right Path=%s", leftPathFile, rightPathFile);
+		
+		PathfinderAuto(rightPathFile, leftPathFile);
+	}
+
+	private void PathfinderAuto(String rightPathFile, String leftPathFile)
+	{
+		Pathfinder.setTrace(true);
+		Util.consoleLog("Pathfinder Trace =%b", Pathfinder.isTracing());
+		
+		double wheel_diameter = Util.inchesToMeters(5.8);
+		double max_velocity = 1.86; //1.86 m/s was the actual velocity
+		int encoder_counts = 4096;
+
+		//NOTE THIS ISN'T A MISTAKE, WE NEED TO INVERT THE PATHS DUE TO AN ERROR 
+		//IN PATHFINDER
+		File leftTrajectoryCSV = new File(leftPathFile);
+		File rightTrajectoryCSV = new File(rightPathFile);
+
+		Trajectory rightPath = Pathfinder.readFromCSV(rightTrajectoryCSV);
+		Trajectory leftPath = Pathfinder.readFromCSV(leftTrajectoryCSV);
+	   
+		Util.consoleLog("read the path files");
+
+		EncoderFollower left = new EncoderFollower(leftPath, "left");
+		EncoderFollower right = new EncoderFollower(rightPath, "right");
+	   
+		left.configureEncoder(Devices.leftEncoder.get(), encoder_counts, wheel_diameter);
+		right.configureEncoder(Devices.rightEncoder.get(), encoder_counts, wheel_diameter);
+
+		left.configurePIDVA(0.5, 0.0, 0.0, 1/max_velocity, 0.0);
+		right.configurePIDVA(0.5, 0.0, 0.0, 1/max_velocity, 0.0);
+	   
+		//Initialize segment tracker variable
+		int SegCount = 0;
+		double totalTime = 0, delay = 0, elapsedSegmentTime = leftPath.get(SegCount).dt;
+		double elapsedTime = 0, totalSegmentTime = 0, averageElapsedTime = 0;
+
+		Util.getElaspedTime();
+	   
+		while(isAutoActive() && (SegCount < leftPath.length()))
+		{
+		   totalTime += elapsedTime;
+
+		   elapsedSegmentTime = leftPath.get(SegCount).dt;
+		   totalSegmentTime += elapsedSegmentTime;
+		   
+		   double leftSpeed = left.calculate(Devices.leftEncoder.get(), SegCount);
+		   double rightSpeed = right.calculate(Devices.rightEncoder.get(), SegCount);
+
+		   Util.consoleLog("lp= %.4f rp=%.4f SegCount=%d", leftSpeed, rightSpeed, SegCount);
+		   
+		   double gyro_heading = Devices.navx.getHeading();
+		   double segment_heading = Pathfinder.r2d(left.getHeading());
+
+		   double angleDifference = Pathfinder.boundHalfDegrees(segment_heading - gyro_heading);
+
+		   double turn = 0.8 * (1.0 / 80.0) * angleDifference;
+
+		   leftSpeed = Util.clampValue(leftSpeed + turn, 1);
+		   rightSpeed = Util.clampValue(rightSpeed - turn, 1);
+
+		   Util.consoleLog("le=%.4f lp=%.2f  re==%.4f rp=%.2f  dhdg=%.0f  hdg=%.0f ad=%.2f  turn=%.5f  time=%.3f totalelaspedtime = %.3f segmentTime = %.3f totalSegmentTime = %.3f", 
+						   Util.inchesToMeters(Devices.leftEncoder.getDistance()), leftSpeed, Util.inchesToMeters(Devices.rightEncoder.getDistance()), rightSpeed, 
+						   segment_heading, gyro_heading, angleDifference, turn,  elapsedTime, totalTime, elapsedSegmentTime, totalSegmentTime);
+
+		   Devices.robotDrive.tankDrive(leftSpeed, rightSpeed);
+		   
+		   //Difference between the total time the loop has been running and the total time the segments have been running
+		   delay = totalSegmentTime - totalTime;
+		   
+		   //Set the delay to be a minimum of 0, can't set the delay to be a negative number
+		   if(delay < 0.00) delay = 0.00;
+		   
+		   Util.consoleLog("delay =%.3f", delay);
+
+		   //Set the delay 
+		   Timer.delay(delay);
+
+		   //Increment the Segment the robot is on
+		   SegCount++;
+		}
+	   
+		if(isAutoActive())
+		{
+		   Util.consoleLog("The Trajectory is Complete");
+		   averageElapsedTime = totalTime/SegCount;
+		   Util.consoleLog("averageTime =%.3f", averageElapsedTime);		   
+		}
+
+		Devices.robotDrive.stopMotor();
+
+		/*
+	   	VISION STUFF WILL BE HERE IN THE NEXT UPDATE (HOPEFULLY)!
+		 */
+	}
+		
 	/**
 	 * Auto drive straight in set direction and power for specified encoder count. Stops
 	 * with or without brakes on CAN bus drive system. Uses NavX yaw to drive straight.

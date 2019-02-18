@@ -94,8 +94,8 @@ public class Devices
 
 		  LFCanTalon = new WPI_TalonSRX(1);
 		  LRCanTalon = new WPI_TalonSRX(2);
-		  RFCanTalon = new WPI_TalonSRX(4);	
-		  RRCanTalon = new WPI_TalonSRX(3);	
+		  RFCanTalon = new WPI_TalonSRX(3);	
+		  RRCanTalon = new WPI_TalonSRX(4);	
 		  
 	      // Initialize CAN Talons and write status to log so we can verify
 	      // all the Talons are connected.
@@ -155,11 +155,13 @@ public class Devices
 		  // Setup a SpeedControllerGroup for the left and right H drive motors.
 	      hDrive = new SpeedControllerGroup(leftSpark, rightSpark);
 	      
+	      hDrive.setInverted(true);
+	      
 		  leftWinch = new WPI_VictorSPX(7);
 		  rightWinch = new WPI_VictorSPX(8);
 		  pickupMotor = new WPI_VictorSPX(9);
 		  ballSpit = new WPI_VictorSPX(10);
-		  hatchWinch = new Talon(0);
+		  //hatchWinch = new Talon(0);
 		  
 		  leftWinch.setNeutralMode(NeutralMode.Brake);
 		  rightWinch.setNeutralMode(NeutralMode.Brake);
