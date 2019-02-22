@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Lift 
 {
 	private Robot robot;
-	private boolean				holdingPosition, holdingHeight;
+	private boolean				holdingPosition = false, holdingHeight = false;
 	private final PIDController	liftPidController, hatchPidController;
 
 	// This variable used to make this class is a singleton.
@@ -55,8 +55,8 @@ public class Lift
 		liftPidController.disable();
 		liftPidController.close();
 		
-		hatchPidController.disable();
-		hatchPidController.close();
+		//hatchPidController.disable();
+		//hatchPidController.close();
 
 		lift =  null;
 	}
@@ -199,5 +199,12 @@ public class Lift
 		{
 			hatchPidController.disable();
 		}
+	}
+	
+	public void releaseHatch()
+	{
+		Util.consoleLog();
+		
+		Devices.hatchReleaseValve.Open();
 	}
 }

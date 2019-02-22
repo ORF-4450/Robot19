@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 @SuppressWarnings("deprecation")
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC19-02.17.19-01";
+  static final String  	PROGRAM_NAME = "RAC19-02.20.19-01";
 
   public Properties		robotProperties;
   
@@ -285,7 +285,7 @@ public class Robot extends SampleRobot
         
           // Start operator control process contained in the Teleop class.
         
-          teleOp =Teleop.getInstance(this);
+          teleOp = Teleop.getInstance(this);
        
           teleOp.OperatorControl();
 

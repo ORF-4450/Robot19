@@ -4,7 +4,8 @@ import Team4450.Lib.Util;
 
 public class Pickup 
 {
-	private Robot robot;
+	private Robot 	robot;
+	private boolean	extended = false;
 	
 	// This variable and method make sure this class is a singleton.
 	
@@ -28,6 +29,8 @@ public class Pickup
 	{
 		this.robot = robot;
 		
+		retract();
+		
 		Util.consoleLog("Pickup created!");
 	}
 	
@@ -42,4 +45,27 @@ public class Pickup
 	}
 	
 	// This is the rest of the class.
+	
+	public void extend()
+	{
+		Util.consoleLog();
+		
+		Devices.pickupValve.SetA();
+		
+		extended = true;
+	}
+	
+	public void retract()
+	{
+		Util.consoleLog();
+
+		Devices.pickupValve.SetB();
+		
+		extended = false;
+	}
+	
+	public boolean isExtended()
+	{
+		return extended;
+	}
 }

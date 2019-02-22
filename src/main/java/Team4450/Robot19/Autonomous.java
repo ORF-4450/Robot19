@@ -316,7 +316,7 @@ public class Autonomous
 		Pathfinder.setTrace(true);
 		Util.consoleLog("Pathfinder Trace =%b", Pathfinder.isTracing());
 		
-		double wheel_diameter = Util.inchesToMeters(5.8);
+		double wheel_diameter = Util.inchesToMeters(5.875);
 		double max_velocity = 1.86; //1.86 m/s was the actual velocity
 		int encoder_counts = 4096;
 

@@ -42,7 +42,7 @@ class Teleop
 		
 		vision = Vision.getInstance(robot);
 		
-		//lift = Lift.getInstance(robot);
+		lift = Lift.getInstance(robot);
 		
 		pickup = Pickup.getInstance(robot);
 		
@@ -187,6 +187,7 @@ class Teleop
 			LCD.printLine(4, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), 
 					Devices.navx.getTotalYaw(), Devices.navx.getYawRate(), Devices.navx.getHeading());
 			LCD.printLine(5, "wEnc=%d  hEnc=%d", Devices.winchEncoder.get(), Devices.hatchEncoder.get());
+			LCD.printLine(6, "wSwitch=%b  ballsw=%b", Devices.winchSwitch.get(), Devices.ballSwitch.get());
 			LCD.printLine(10, "pressureV=%.2f  psi=%d", robot.monitorCompressorThread.getVoltage(), 
 					robot.monitorCompressorThread.getPressure());
 			
@@ -251,7 +252,7 @@ class Teleop
 
 			// Set winch power.
 			
-			//lift.setWinchPower(utilY);
+			lift.setWinchPower(utilY);
 
 			// Update the robot heading indicator on the DS. Only for labview DB.
 
@@ -272,6 +273,12 @@ class Teleop
 		gearBox.lowSpeed();
 		
 		Util.consoleLog("end");
+	}
+
+	private void printLine( int i, String string, boolean b )
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 	private boolean isLeftRightEqual(double left, double right, double percent)
@@ -334,6 +341,12 @@ class Teleop
 						climber.retractFrontClimb(true);
 					else
 						climber.extendFrontClimb(true);
+					
+				case BUTTON_BLUE_RIGHT:
+					if (pickup.isExtended())
+						pickup.retract();
+					else
+						pickup.extend();
 					
 				default:
 					break;

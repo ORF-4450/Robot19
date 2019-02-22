@@ -31,26 +31,25 @@ Port	Device blk-pos	Description
 2		ValveDA	1		A side front climb. Extends.
 3		ValveDA	1		B Side front climb. Retracts.
 4		ValveDA	2		A side rear climb. Extends.
-5		ValveDA	2		B Side rear climb. Retracts.
-6		ValveDA 3		A side
-7		ValveDA 3		B side
+5		ValveDA	2		B side rear climb. Retracts.
+6		ValveDA 3		A side pickup. Extends.
+7		ValveDA 3		B side pickup. Retracts.
 
 
 PCM 1 Ports
 Port	Device blk-pos	Description
 -----------------------------------------------------------------------------------
-0		ValveDA 4		A side
-1		ValveDA 4		B Side
-2		ValveSA 5		A side
-3		ValveDA 5		B side
-4		ValveSA 6		A side Hatch Kicker.
+0		ValveDA 4		A side unused.
+1		ValveDA 4		B Side unused.
+2		ValveSA 5		A side Hatch release.
+3		ValveSA 5		B side Not used.
 
 
 Digital I/O Ports
 Port	Device			Description
 -----------------------------------------------------------------------------------
-0		encoder			winch encoder (touchless).
-1		reserved
+0		encoder			winch encoder port 1.
+1		encoder			winch encoder port 2.
 2		encoder			hatch encoder port 1.
 3		encoder			hatch encoder port 2.
 4		Limit Switch	winch bottom detection.
