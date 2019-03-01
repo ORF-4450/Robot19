@@ -8,7 +8,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Lift 
 {
 	private Robot robot;
-	private boolean				holdingPosition = false, holdingHeight = false;
+	private boolean				holdingPosition = false, holdingHeight = false, holdingHatchHeight = false;
+	private boolean				hatchReleased = false;
 	private final PIDController	liftPidController, hatchPidController;
 
 	// This variable used to make this class is a singleton.
@@ -39,6 +40,7 @@ public class Lift
 		
 		Devices.winchEncoder.reset();
 		Devices.hatchEncoder.reset();
+		resetHatch();
 				
 		updateDS();
 		
@@ -55,8 +57,8 @@ public class Lift
 		liftPidController.disable();
 		liftPidController.close();
 		
-		//hatchPidController.disable();
-		//hatchPidController.close();
+		hatchPidController.disable();
+		hatchPidController.close();
 
 		lift =  null;
 	}
@@ -74,31 +76,34 @@ public class Lift
 	{
 		if (isHoldingHeight()) return;
 		
+		// Reduce power going down.
+		if (power < 0) power = power * .50;
+		
 		if (Devices.winchEncoderEnabled)
 		{
 			// limit switch and hall effect sensor read in reverse so two sets of code.
 			
 			// limit switch form.
-			if ((power > 0 && Devices.winchEncoder.get() < 10800) ||	
-				(power < 0 && !Devices.winchSwitch.get()))
+//			if ((power > 0 && Devices.winchEncoder.get() < 10800) ||	
+//				(power < 0 && !Devices.winchSwitch.get()))
+//				Devices.winchDrive.set(power);
+//			else
+//			{
+//				if (Devices.winchSwitch.get()) Devices.winchEncoder.reset();
+//				
+//				Devices.winchDrive.set(0);
+//			}
+			
+			// hall effect sensor form.
+			if ((power > 0 && Devices.winchEncoder.get() < 14000) ||	// 10800
+				(power < 0 && Devices.winchSwitch.get()))
 				Devices.winchDrive.set(power);
 			else
 			{
-				if (Devices.winchSwitch.get()) Devices.winchEncoder.reset();
+				if (!Devices.winchSwitch.get()) Devices.winchEncoder.reset();
 				
 				Devices.winchDrive.set(0);
 			}
-			
-//				// hall effect sensor form.
-//				if ((power > 0 && Devices.winchEncoder.get() < 14000) ||	// 10800
-//					(power < 0 && Devices.winchSwitch.get()))
-//					Devices.winchDrive.set(power);
-//				else
-//				{
-//					if (!Devices.winchSwitch.get()) Devices.winchEncoder.reset();
-//					
-//					Devices.winchDrive.set(0);
-//				}
 		}
 		else
 			Devices.winchDrive.set(power);
@@ -174,6 +179,15 @@ public class Lift
 		}
 	}
 	
+	// Set hatch winch motors to arbitrary power.
+	
+	public void setHatchPower(double power)
+	{
+		if (isHoldingHatchHeight()) return;
+		
+		Devices.hatchWinch.set(power);
+	}
+	
 	// Automatically move hatch holder to specified encoder count and hold it there.
 	// count < 0 turns pid controller off.
 	
@@ -194,11 +208,18 @@ public class Lift
 			hatchPidController.setSetpoint(count);
 			hatchPidController.setPercentTolerance(1);	// % error.
 			hatchPidController.enable();
+			holdingHatchHeight = true;
 		}
 		else
 		{
 			hatchPidController.disable();
+			holdingHatchHeight = false;
 		}
+	}
+	
+	public boolean isHoldingHatchHeight()
+	{
+		return holdingHatchHeight;
 	}
 	
 	public void releaseHatch()
@@ -206,5 +227,21 @@ public class Lift
 		Util.consoleLog();
 		
 		Devices.hatchReleaseValve.Open();
+		
+		hatchReleased = true;
+	}
+	
+	public void resetHatch()
+	{
+		Util.consoleLog();
+		
+		Devices.hatchReleaseValve.Close();
+		
+		hatchReleased = false;
+	}
+
+	public boolean isHatchReleased()
+	{
+		return hatchReleased;
 	}
 }

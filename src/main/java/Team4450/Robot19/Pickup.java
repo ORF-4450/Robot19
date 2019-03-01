@@ -1,11 +1,15 @@
 package Team4450.Robot19;
 
 import Team4450.Lib.Util;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import Team4450.Robot19.Devices;
 
 public class Pickup 
 {
 	private Robot 	robot;
-	private boolean	extended = false;
+	private boolean	extended = false, intakeRunning = false, spitRunning = false, autoIntake = false;
+	private Thread	autoIntakeThread;
 	
 	// This variable and method make sure this class is a singleton.
 	
@@ -67,5 +71,145 @@ public class Pickup
 	public boolean isExtended()
 	{
 		return extended;
+	}
+	
+	public void intakeBall()
+	{
+		Util.consoleLog("running=%b", intakeRunning);
+		
+		if (intakeRunning)
+		{
+			Devices.ballSpit.stopMotor();
+			Devices.pickupMotor.stopMotor();
+			intakeRunning = false;
+		}
+		else
+		{
+			Devices.ballSpit.set(.20);
+			Devices.pickupMotor.set(.50);
+			intakeRunning = true;
+		}
+	}
+	
+	public boolean isIntakeRunning()
+	{
+		return intakeRunning;
+	}
+	
+	public void spitBall()
+	{
+		Util.consoleLog();
+		
+		if (isAutoIntakeRunning()) stopAutoIntake();
+		
+		if (intakeRunning) intakeBall();
+		
+		spitRunning = true;
+		
+		Devices.ballSpit.set(.50);
+
+		Timer.delay(.5);
+		
+		Devices.ballSpit.stopMotor();
+		
+		spitRunning = false;
+	}
+	
+	public boolean isSpitRunning()
+	{
+		return spitRunning;
+	}
+	
+	public boolean isAutoIntakeRunning()
+	{
+		return autoIntake;
+	}
+	
+	/**
+	 * Start auto cube Intake thread.
+	 */
+	public void startAutoIntake()
+	{
+		Util.consoleLog();
+		
+		if (autoIntakeThread != null) return;
+
+		autoIntakeThread = new AutoIntake();
+		autoIntakeThread.start();
+	}
+	
+	/**
+	 * Stops auto Intake thread.
+	 */
+	public void stopAutoIntake()
+	{
+		Util.consoleLog();
+
+		if (autoIntakeThread != null) autoIntakeThread.interrupt();
+		
+		autoIntakeThread = null;
+	}
+
+	//----------------------------------------
+	// Automatic cube Intake thread.
+	
+	private class AutoIntake extends Thread
+	{
+		AutoIntake()
+		{
+			Util.consoleLog();
+			
+			this.setName("AutoBallIntake");
+	    }
+		
+	    public void run()
+	    {
+	    	boolean ballDetected = false;
+	    	
+	    	Util.consoleLog();
+	    	
+	    	try
+	    	{
+	    		autoIntake = true;
+	    		
+	    		updateDS();
+	    		
+	    		intakeBall();
+
+	    		sleep(250);
+	    		
+    	    	while (!isInterrupted() && robot.isEnabled())
+    	    	{
+    	    		// while looping we watch for ball limit switch detection (false). 
+    	    		// When it goes true again we stop.
+    	    		
+    	    		if (!Devices.ballSwitch.get()) ballDetected = true;
+    	    		
+    	    		if (ballDetected && Devices.ballSwitch.get()) break;
+    	    		
+    	            // We sleep since JS updates come from DS every 20ms or so. We wait 50ms so this thread
+    	            // does not run at the same time as the teleop thread.
+    	            sleep(50);
+    	    	}
+    	    	
+    	    	if (!interrupted() && robot.isEnabled()) Util.consoleLog("  ball loaded");
+    	    	
+    	    	sleep(100);
+	    	}
+	    	catch (InterruptedException e) { intakeBall(); }
+	    	catch (Throwable e) { e.printStackTrace(Util.logPrintStream); }
+	    	finally { if (intakeRunning) intakeBall(); }
+			
+	    	autoIntake = false;
+			autoIntakeThread = null;
+			updateDS();
+	    }
+	}	// end of AutoIntake thread class.
+
+	private void updateDS()
+	{
+		SmartDashboard.putBoolean("Intake", intakeRunning);
+		SmartDashboard.putBoolean("Spit", spitRunning);
+		SmartDashboard.putBoolean("AutoIntake", autoIntake);
 	}
 }

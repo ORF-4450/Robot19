@@ -52,9 +52,10 @@ Port	Device			Description
 1		encoder			winch encoder port 2.
 2		encoder			hatch encoder port 1.
 3		encoder			hatch encoder port 2.
-4		Limit Switch	winch bottom detection.
+4		Limit Switch	winch bottom detection. Reads false when bottom detected.
 5		Limit Switch	ball in delivery position detection. Note ball passes over
                         switch and we have to detect when released to stop spit motor.
+                        Reads false when ball detected.
 
 Analog I/O Ports
 Port	Device			Description
@@ -72,7 +73,7 @@ Y Axis					Forward/Backward tank driving.
 Right Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
-TRIGGER					Toggle alternate driving mode.
+TRIGGER					Enable H driving mode.
 Y Axis					Forward/Backward tank driving.
 X Axis					Left/Right H driving.
 
@@ -80,16 +81,30 @@ X Axis					Left/Right H driving.
 Utility Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
-Y Axis					Lift winch motors. +/back goes up.
+Y Axis					Lift winch motors. +/back goes up. While TOP_BACK, run 
+							hatchMotor (Need to test right direction).
+TRIGGER                 Hatch piston (toggle out and in) (still needs to be tested).
+TOP_LEFT                Runs Intake motors to intake the ball. (Verified correct direction).   
+TOP_RIGHT               Runs BallSpit Motor to spit out the ball. (Verified correct direction).
+TOP_MIDDLE              Runs AutoIntake() Thread. (Still needs testing).
+TOP_BACK                While pressed allow for hatchWinch to be controlled (Needs testing).
 
 
 LaunchPad
 Button Name				Function
 -----------------------------------------------------------------------------------
-BUTTON_RED				Shift gears.
-BUTTON_GREEN			Reset wheel encoder.
+BUTTON_RED				Abort Auto Program. Reset wheel encoders in teleop.
+BUTTON_GREEN			Shift gears.
+BUTTON_RED_RIGHT        Set lift position to 3rd level
+BUTTON_YELLOW           Set lift position to 2nd level
+BUTTON_BLUE_RIGHT       Set lift position to 1st level
+BUTTON_BLACK            Toggle retracting and extending the pistons on the back (Need to test if toggle works).
+BUTTON BLUE             Toggle retracting and extending the pistons on the front (Need to test if toggle works).
+
 ROCKER_LEFT_FRONT		Switch Cameras.
-ROCKER_LEFT_BACK		Toggle drive talon brake mode.
+//ROCKER_LEFT_BACK		Toggle drive talon brake mode.
+ROCKER_LEFT_BACK        Toggle between cameras on pi and roboRio (Needs testing).
+ROCKER_RIGHT            Set hatchMotor to out of the way or for scoring (Needs testing).
 
 
 Dashboard Indicators/Controls

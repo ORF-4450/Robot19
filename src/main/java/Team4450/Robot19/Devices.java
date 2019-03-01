@@ -66,12 +66,11 @@ public class Devices
 
 	  public static NavX				navx;
 
-	  // Touchless Encoder uses single channel on dio port 0.
-	  public final static Counter		winchEncoder = new Counter(0);
-	  public static boolean				winchEncoderEnabled = false;
+	  public static boolean				winchEncoderEnabled = true;
 
 	  // Encoder (regular type) is plugged into dio port n:
 	  // orange=+5v blue=signal, dio port n+1: black=gnd yellow=signal. 
+	  public final static Encoder		winchEncoder = new Encoder(0, 1, true, EncodingType.k4X);
 	  public final static Encoder		hatchEncoder = new Encoder(2, 3, true, EncodingType.k4X);
 	  
 	  public static DigitalInput		winchSwitch = new DigitalInput(4);
@@ -156,7 +155,7 @@ public class Devices
 		  rightSpark.setIdleMode(IdleMode.kBrake);
 
 		  // Setup a SpeedControllerGroup for the left and right H drive motors.
-	      hDrive = new SpeedControllerGroup(leftSpark, rightSpark);
+	      //hDrive = new SpeedControllerGroup(leftSpark, rightSpark);
 	      
 	      hDrive.setInverted(true);
 	      
@@ -165,6 +164,11 @@ public class Devices
 		  pickupMotor = new WPI_VictorSPX(9);
 		  ballSpit = new WPI_VictorSPX(10);
 		  hatchWinch = new VictorSP(0);
+		  
+		  winchEncoder.setReverseDirection(false);
+		  hatchEncoder.setReverseDirection(false);
+		  
+		  ballSpit.setInverted(true);
 		  
 		  leftWinch.setNeutralMode(NeutralMode.Brake);
 		  rightWinch.setNeutralMode(NeutralMode.Brake);

@@ -4,6 +4,7 @@ package Team4450.Robot19;
 import java.io.File;
 
 import Team4450.Lib.*;
+import Team4450.Lib.LaunchPad.LaunchPadControlIDs;
 import Team4450.Robot19.Devices;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -18,6 +19,8 @@ public class Autonomous
 	private final Robot			robot;
 	private AutoProgram			program = AutoProgram.NoProgram;
 	private final GearBox		gearBox;
+	private LaunchPad			launchPad;
+	private boolean				abortAutonomous = false;
 	
 	private static SendableChooser<AutoProgram>	autoChooser;
 	
@@ -58,13 +61,16 @@ public class Autonomous
 		Util.consoleLog();
 		
 		if (gearBox != null) gearBox.dispose();
+		if (launchPad != null) launchPad.dispose();
 		
 		autonomous = null;
 	}
 	
 	private boolean isAutoActive()
 	{
-		return robot.isEnabled() && robot.isAutonomous();
+		if (launchPad.GetCurrentState(LaunchPadControlIDs.BUTTON_RED)) abortAutonomous = true;
+		
+		return robot.isEnabled() && robot.isAutonomous() && !abortAutonomous;
 	}
 	
 	// Configure SendableChooser with auto program choices and
@@ -79,7 +85,7 @@ public class Autonomous
 		autoChooser = new SendableChooser<AutoProgram>();
 		
 		autoChooser.setName("Auto Program");
-		autoChooser.setDefaultOption("No Program", AutoProgram.NoProgram);
+		autoChooser.setDefaultOption("No Program (teleop)", AutoProgram.NoProgram);
 		
 		//The naming convention is Alliance, Upper/Lower Rocket, The side of the rocket the robot is going to 
 		//from the perspective of the driver station
@@ -116,9 +122,11 @@ public class Autonomous
 		
 		Util.consoleLog("at reset le=%d  re=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get());
 		
+		// Set encoders to update every 100ms.
 		Devices.rightEncoder.setStatusFramePeriod(100);
 		Devices.leftEncoder.setStatusFramePeriod(100);
 
+		// Reset encoders with 112ms delay before proceeding.
 		int rightError = Devices.rightEncoder.reset(2);
 		int leftError = Devices.leftEncoder.reset(110);
 		
@@ -128,6 +136,7 @@ public class Autonomous
        // Set NavX yaw tracking to 0.
 		Devices.navx.resetYaw();
 
+		// Reset field location tracking.
 		Devices.navx.getAHRS().resetDisplacement();
 		
 		// Set heading to initial angle (0 is robot pointed down the field) so
@@ -140,10 +149,15 @@ public class Autonomous
 		// Set Talon ramp rate for smooth acceleration from stop. Determine by observation.
 		Devices.SetCANTalonRampRate(1.0);
 		
+		// Create LaunchPad to allow use of red button to abort auto program.
+		launchPad = new LaunchPad(Devices.launchPad, LaunchPadControlIDs.BUTTON_RED, this);
+
 		// Determine which auto program to run as indicated by driver station.
 		switch (program)
 		{
 			case NoProgram:		// No auto program.
+				// Switch to teleop for "sand storm" driven operation.
+				switchToTeleop();
 				break;
 			
 			case RocketUpClose:
@@ -272,6 +286,9 @@ public class Autonomous
 				break;
 		}
 		
+		// If auto aborted, switch to teleop.
+		if (abortAutonomous) switchToTeleop();
+		
 		// Update the robot heading indicator on the DS.
 
 		// Next statement only used with labview DB.
@@ -298,6 +315,19 @@ public class Autonomous
 		TestPathFinder
 	}
 
+	// Switch to teleop for "sand storm" operation.
+
+	private void switchToTeleop()
+	{
+		Util.consoleLog();
+		
+		if (launchPad != null) launchPad.dispose();
+		launchPad = null;
+
+		robot.operatorControl();
+	}
+
+	// Createss left and right path file names from path name and alliance color.
 	private void pathSelector(AutoProgram pathName, DriverStation.Alliance allianceColor)
 	{
 		String rightPathFile;
@@ -311,10 +341,11 @@ public class Autonomous
 		PathfinderAuto(rightPathFile, leftPathFile);
 	}
 
+	// Execute a path using left & right path file names.
 	private void PathfinderAuto(String rightPathFile, String leftPathFile)
 	{
 		Pathfinder.setTrace(true);
-		Util.consoleLog("Pathfinder Trace =%b", Pathfinder.isTracing());
+		Util.consoleLog("Pathfinder Trace=%b", Pathfinder.isTracing());
 		
 		double wheel_diameter = Util.inchesToMeters(5.875);
 		double max_velocity = 1.86; //1.86 m/s was the actual velocity
@@ -328,7 +359,7 @@ public class Autonomous
 		Trajectory rightPath = Pathfinder.readFromCSV(rightTrajectoryCSV);
 		Trajectory leftPath = Pathfinder.readFromCSV(leftTrajectoryCSV);
 	   
-		Util.consoleLog("read the path files");
+		Util.consoleLog("path files loaded");
 
 		EncoderFollower left = new EncoderFollower(leftPath, "left");
 		EncoderFollower right = new EncoderFollower(rightPath, "right");
@@ -339,13 +370,20 @@ public class Autonomous
 		left.configurePIDVA(0.5, 0.0, 0.0, 1/max_velocity, 0.0);
 		right.configurePIDVA(0.5, 0.0, 0.0, 1/max_velocity, 0.0);
 	   
-		//Initialize segment tracker variable
+		// Initialize segment tracker variables
 		int SegCount = 0;
 		double totalTime = 0, delay = 0, elapsedSegmentTime = leftPath.get(SegCount).dt;
 		double elapsedTime = 0, totalSegmentTime = 0, averageElapsedTime = 0;
 
 		Util.getElaspedTime();
 	   
+		Util.consoleLog("start following path");
+		
+		// This loop reads each path segment from the paths and executes the segment action.
+		// It also does time tracking and computes the loop delay to try to match loop time
+		// to the path segment interval time. Keeping these times as close as possible is
+		// critical to correct path following.
+		
 		while(isAutoActive() && (SegCount < leftPath.length()))
 		{
 		   totalTime += elapsedTime;
@@ -358,11 +396,16 @@ public class Autonomous
 
 		   Util.consoleLog("lp= %.4f rp=%.4f SegCount=%d", leftSpeed, rightSpeed, SegCount);
 		   
+		   // Determine difference between robot heading and desired segment heading.
+		   
 		   double gyro_heading = Devices.navx.getHeading();
 		   double segment_heading = Pathfinder.r2d(left.getHeading());
 
 		   double angleDifference = Pathfinder.boundHalfDegrees(segment_heading - gyro_heading);
 
+		   // The 1/80 scales the turn factor to be 1 (100%) at 80 degrees of error. We then tone
+		   // that down with the .8 reduction. These numbers from Jaci's examples and seems to work.
+		   
 		   double turn = 0.8 * (1.0 / 80.0) * angleDifference;
 
 		   leftSpeed = Util.clampValue(leftSpeed + turn, 1);
@@ -374,18 +417,18 @@ public class Autonomous
 
 		   Devices.robotDrive.tankDrive(leftSpeed, rightSpeed);
 		   
-		   //Difference between the total time the loop has been running and the total time the segments have been running
+		   // Difference between the total time the loop has been running and the total time the segments have been running
 		   delay = totalSegmentTime - totalTime;
 		   
-		   //Set the delay to be a minimum of 0, can't set the delay to be a negative number
+		   // Set the delay to be a minimum of 0, can't set the delay to be a negative number
 		   if(delay < 0.00) delay = 0.00;
 		   
 		   Util.consoleLog("delay =%.3f", delay);
 
-		   //Set the delay 
+		   // Set the delay 
 		   Timer.delay(delay);
 
-		   //Increment the Segment the robot is on
+		   // Increment the path Segment the robot is on
 		   SegCount++;
 		}
 	   

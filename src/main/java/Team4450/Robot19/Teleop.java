@@ -88,16 +88,16 @@ class Teleop
 		int		angle;
 
 		// Motor safety turned off during initialization.
-		//Devices.robotDrive.setSafetyEnabled(false);
+		Devices.robotDrive.setSafetyEnabled(false);
 
 		Util.consoleLog();
 
 		LCD.printLine(1, "Mode: teleop All=%s, Start=%d, FMS=%b", robot.alliance.name(), robot.location, Devices.ds.isFMSAttached());
 		
 		// Set synchronousPID as a sendable for testing.
-		SynchronousPID pidTest = new SynchronousPID(1,2,3,4);
-		pidTest.setSetpoint(99);		
-		SmartDashboard.putData(pidTest);
+		//SynchronousPID pidTest = new SynchronousPID(1,2,3,4);
+		//pidTest.setSetpoint(99);		
+		//SmartDashboard.putData(pidTest);
 
 		// Configure LaunchPad and Joystick event handlers.
 
@@ -109,9 +109,15 @@ class Teleop
 		lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_FRONT);
 		lpControl.controlType = LaunchPadControlTypes.SWITCH;
 
-		//Example on how to track more buttons:
+		lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_RIGHT);
+		lpControl.controlType = LaunchPadControlTypes.SWITCH;
+
 		launchPad.AddControl(LaunchPadControlIDs.BUTTON_GREEN);
 		launchPad.AddControl(LaunchPadControlIDs.BUTTON_YELLOW);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLUE);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLUE_RIGHT);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLACK);
+		launchPad.AddControl(LaunchPadControlIDs.BUTTON_RED_RIGHT);
 		launchPad.addLaunchPadEventListener(new LaunchPadListener());
 		launchPad.Start();
 
@@ -132,7 +138,10 @@ class Teleop
 
 		utilityStick = new JoyStick(Devices.utilityStick, "UtilityStick", JoyStickButtonIDs.TRIGGER, this);
 		//Example on how to track button:
-		//utilityStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_LEFT);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_RIGHT);
+		utilityStick.AddButton(JoyStickButtonIDs.TOP_BACK);
 		utilityStick.addJoyStickEventListener(new UtilityStickListener());
 		utilityStick.Start();
 
@@ -168,7 +177,7 @@ class Teleop
 
 		Util.consoleLog("enter driving loop");
 		
-		while (robot.isEnabled() && robot.isOperatorControl())
+		while (robot.isEnabled())	// && robot.isOperatorControl())
 		{
 			// Get joystick deflection and feed to robot drive object
 			// using calls to our JoyStick class.
@@ -188,20 +197,21 @@ class Teleop
 					Devices.navx.getTotalYaw(), Devices.navx.getYawRate(), Devices.navx.getHeading());
 			LCD.printLine(5, "wEnc=%d  hEnc=%d", Devices.winchEncoder.get(), Devices.hatchEncoder.get());
 			LCD.printLine(6, "wSwitch=%b  ballsw=%b", Devices.winchSwitch.get(), Devices.ballSwitch.get());
-			LCD.printLine(10, "pressureV=%.2f  psi=%d", robot.monitorCompressorThread.getVoltage(), 
-					robot.monitorCompressorThread.getPressure());
+			LCD.printLine(10, "pressureV=%.2f  psi=%d  ustb=%b", robot.monitorCompressorThread.getVoltage(), 
+					robot.monitorCompressorThread.getPressure(), utilityStick.GetCurrentState(JoyStickButtonIDs.TOP_BACK));
 			
 			// set H drive motors.
 			
 			if (!autoTarget && rightStick.GetCurrentState(JoyStickButtonIDs.TRIGGER))
-				Devices.hDrive.set(rightX);
+				Devices.hDrive.set(rightX * .50);
 			else
 				Devices.hDrive.set(0);
+				//steeringAssistMode = false;
 			
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
 
-			// Two drive modes, full tank and alternate. Switch on right stick trigger.
+			// Two drive modes, full tank and alternate. Switch on right stick trigger (not used 2019).
 
 			if (!autoTarget) 
 			{
@@ -245,15 +255,26 @@ class Teleop
 				}
 				else
 					Devices.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
+					//steeringAssistMode = false;
 				
 					// This shows how to use curvature drive mode, toggled by trigger (for testing).
 					//Devices.robotDrive.curvatureDrive(rightY, rightX, rightStick.GetLatchedState(JoyStickButtonIDs.TRIGGER));
 			}
 
-			// Set winch power.
-			
-			lift.setWinchPower(utilY);
+			// Set lift winch/hatch winch power.
 
+			if (utilityStick.GetCurrentState(JoyStickButtonIDs.TOP_BACK))
+			{
+				if (lift.isHoldingHeight()) lift.setWinchPower(0);
+				
+				lift.setHatchPower(utilY);
+			}
+			else
+			{
+				//lift.setHatchPower(0);
+				lift.setWinchPower(utilY);
+			}
+			
 			// Update the robot heading indicator on the DS. Only for labview DB.
 
 			//SmartDashboard.putNumber("Gyro", Devices.navx.getHeadingInt());
@@ -273,12 +294,6 @@ class Teleop
 		gearBox.lowSpeed();
 		
 		Util.consoleLog("end");
-	}
-
-	private void printLine( int i, String string, boolean b )
-	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	private boolean isLeftRightEqual(double left, double right, double percent)
@@ -323,7 +338,7 @@ class Teleop
 
 			switch(control.id)
 			{
-				case BUTTON_RED:
+				case BUTTON_GREEN:
 					if (gearBox.isLowSpeed())
 		    			gearBox.highSpeed();
 		    		else
@@ -331,22 +346,38 @@ class Teleop
 					
 					break;
 					
-				case BUTTON_GREEN:
+				case BUTTON_RED:
 					Devices.leftEncoder.reset();
 					Devices.rightEncoder.reset();
 					break;
 					
-				case BUTTON_YELLOW:
+				case BUTTON_BLUE:
 					if (climber.isFrontExtended())
-						climber.retractFrontClimb(true);
+						climber.retractFrontClimb(true);	// Remove overrides after testing.
 					else
 						climber.extendFrontClimb(true);
 					
-				case BUTTON_BLUE_RIGHT:
-					if (pickup.isExtended())
-						pickup.retract();
+				case BUTTON_BLACK:
+					if (climber.isRearExtended())
+						climber.retractRearClimb();
 					else
-						pickup.extend();
+						climber.extendRearClimb(true);
+					
+				case BUTTON_BLUE_RIGHT:
+					lift.setHeight(1000);
+//					if (pickup.isExtended())
+//						pickup.retract();
+//					else
+//						pickup.extend();
+					break;
+					
+				case BUTTON_RED_RIGHT:
+					lift.setHeight(3000);
+					break;
+					
+				case BUTTON_YELLOW:
+					lift.setHeight(5000);
+					break;
 					
 				default:
 					break;
@@ -398,9 +429,10 @@ class Teleop
 
 			switch(button.id)
 			{
-				case TRIGGER:
-					altDriveMode = !altDriveMode;
-					break;
+				// Trigger used in teleop loop to enable H drive.
+//				case TRIGGER:
+//					altDriveMode = !altDriveMode;
+//					break;
 
 			//Example of Joystick Button case:
 			/*
@@ -466,6 +498,30 @@ class Teleop
 
 			switch(button.id)
 			{
+				case TRIGGER:
+					if (lift.isHatchReleased())
+						lift.resetHatch();
+					else
+						lift.releaseHatch();
+					
+					break;
+					
+				case TOP_LEFT:
+					pickup.intakeBall();
+					break;
+					
+				case TOP_RIGHT:
+					pickup.spitBall();
+					break;
+					
+				case TOP_MIDDLE:
+					if (pickup.isAutoIntakeRunning())
+						pickup.stopAutoIntake();
+					else
+						pickup.startAutoIntake();
+					
+					break;
+					
 				default:
 					break;
 			}
