@@ -202,11 +202,10 @@ class Teleop
 			
 			// set H drive motors.
 			
-			if (!autoTarget && rightStick.GetCurrentState(JoyStickButtonIDs.TRIGGER))
-				Devices.hDrive.set(rightX * .50);
-			else
-				Devices.hDrive.set(0);
-				//steeringAssistMode = false;
+//			if (!autoTarget && rightStick.GetCurrentState(JoyStickButtonIDs.TRIGGER))
+//				Devices.hDrive.set(rightX * .50);
+//			else
+//				Devices.hDrive.set(0);
 			
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.

@@ -157,7 +157,7 @@ public class Devices
 		  // Setup a SpeedControllerGroup for the left and right H drive motors.
 	      //hDrive = new SpeedControllerGroup(leftSpark, rightSpark);
 	      
-	      hDrive.setInverted(true);
+	      //hDrive.setInverted(true);
 	      
 		  leftWinch = new WPI_VictorSPX(7);
 		  rightWinch = new WPI_VictorSPX(8);
