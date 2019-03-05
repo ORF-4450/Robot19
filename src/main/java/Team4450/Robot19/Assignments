@@ -32,15 +32,15 @@ Port	Device blk-pos	Description
 3		ValveDA	1		B Side front climb. Retracts.
 4		ValveDA	2		A side rear climb. Extends.
 5		ValveDA	2		B side rear climb. Retracts.
-6		ValveDA 3		A side pickup. Extends.
-7		ValveDA 3		B side pickup. Retracts.
+6		ValveDA 3		A side unused. Valve appears to be broken.
+7		ValveDA 3		B side unused. Valve appears to be broken.
 
 
 PCM 1 Ports
 Port	Device blk-pos	Description
 -----------------------------------------------------------------------------------
-0		ValveDA 4		A side unused.
-1		ValveDA 4		B Side unused.
+0		ValveDA 4		A side pickup extends.
+1		ValveDA 4		B Side pickup retracts.
 2		ValveSA 5		A side Hatch release.
 3		ValveSA 5		B side Not used.
 
@@ -95,9 +95,9 @@ Button Name				Function
 -----------------------------------------------------------------------------------
 BUTTON_RED				Abort Auto Program. Reset wheel encoders in teleop.
 BUTTON_GREEN			Shift gears.
-BUTTON_RED_RIGHT        Set lift position to 3rd level
-BUTTON_YELLOW           Set lift position to 2nd level
-BUTTON_BLUE_RIGHT       Set lift position to 1st level
+BUTTON_RED_RIGHT        Set lift position to 3rd level.
+BUTTON_YELLOW           Set lift position to 2nd level.
+BUTTON_BLUE_RIGHT       Deploy pickup arm.
 BUTTON_BLACK            Toggle retracting and extending the pistons on the back (Need to test if toggle works).
 BUTTON BLUE             Toggle retracting and extending the pistons on the front (Need to test if toggle works).
 

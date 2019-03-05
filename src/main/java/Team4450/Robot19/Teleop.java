@@ -148,6 +148,8 @@ class Teleop
 		// Invert driving joy sticks Y axis so + values mean forward.
 		leftStick.invertY(true);
 		rightStick.invertY(true);
+		
+		utilityStick.deadZoneY(.10);
 
 		// Set CAN Talon brake mode by rocker switch setting.
 		// We do this here so that the Utility stick thread has time to read the initial state
@@ -202,10 +204,10 @@ class Teleop
 			
 			// set H drive motors.
 			
-//			if (!autoTarget && rightStick.GetCurrentState(JoyStickButtonIDs.TRIGGER))
-//				Devices.hDrive.set(rightX * .50);
-//			else
-//				Devices.hDrive.set(0);
+			if (!autoTarget && rightStick.GetCurrentState(JoyStickButtonIDs.TRIGGER))
+				Devices.hDrive.set(rightX * .50);
+			else
+				Devices.hDrive.set(0);
 			
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
@@ -363,19 +365,27 @@ class Teleop
 						climber.extendRearClimb(true);
 					
 				case BUTTON_BLUE_RIGHT:
-					lift.setHeight(1000);
-//					if (pickup.isExtended())
-//						pickup.retract();
-//					else
-//						pickup.extend();
+					//lift.setHeight(1000);
+					if (pickup.isExtended())
+						pickup.retract();
+					else
+						pickup.extend();
 					break;
 					
 				case BUTTON_RED_RIGHT:
-					lift.setHeight(3000);
+					if (lift.isHoldingHeight())
+						lift.setHeight(-1);
+					else
+						lift.setHeight(500);
+					
 					break;
 					
 				case BUTTON_YELLOW:
-					lift.setHeight(5000);
+					if (lift.isHoldingHeight())
+						lift.setHeight(-1);
+					else
+						lift.setHeight(400);
+					
 					break;
 					
 				default:

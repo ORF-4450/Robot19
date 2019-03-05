@@ -55,7 +55,8 @@ public class Devices
 	  public final static ValveDA		highLowValve = new ValveDA(0);			// For gearbox.
 	  public final static ValveDA		frontClimbValve = new ValveDA(2);		// For front lift.
 	  public final static ValveDA		rearClimbValve = new ValveDA(4);		// For rear lift.
-	  public final static ValveDA		pickupValve = new ValveDA(6);			// For pickup arm.
+	  public final static ValveDA		pickupValve = new ValveDA(1,0);			// For pickup arm.
+	  public final static ValveDA		unusedValve = new ValveDA(6);
 	  public final static ValveSA		hatchReleaseValve = new ValveSA(1, 2);	// release hatch.
 	  
 	  public final static AnalogInput	pressureSensor = new AnalogInput(0);
@@ -155,9 +156,9 @@ public class Devices
 		  rightSpark.setIdleMode(IdleMode.kBrake);
 
 		  // Setup a SpeedControllerGroup for the left and right H drive motors.
-	      //hDrive = new SpeedControllerGroup(leftSpark, rightSpark);
+	      hDrive = new SpeedControllerGroup(leftSpark, rightSpark);
 	      
-	      //hDrive.setInverted(true);
+	      hDrive.setInverted(true);
 	      
 		  leftWinch = new WPI_VictorSPX(7);
 		  rightWinch = new WPI_VictorSPX(8);
@@ -167,8 +168,6 @@ public class Devices
 		  
 		  winchEncoder.setReverseDirection(false);
 		  hatchEncoder.setReverseDirection(false);
-		  
-		  ballSpit.setInverted(true);
 		  
 		  leftWinch.setNeutralMode(NeutralMode.Brake);
 		  rightWinch.setNeutralMode(NeutralMode.Brake);
@@ -180,6 +179,8 @@ public class Devices
 
 		  // Setup a SpeedControllerGroup for the left and right winch drive motors.
 	     winchDrive = new SpeedControllerGroup(leftWinch, rightWinch);	     
+	     
+	     unusedValve.Close();
 	  }
 
 	  // Initialize and Log status indication from CANTalon. If we see an exception

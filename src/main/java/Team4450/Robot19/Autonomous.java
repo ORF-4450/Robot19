@@ -130,6 +130,10 @@ public class Autonomous
 		int rightError = Devices.rightEncoder.reset(2);
 		int leftError = Devices.leftEncoder.reset(110);
 		
+		// We expect hatch mech to be at its highest position at start so we reset and
+		// zero means at the top.
+		Devices.hatchEncoder.reset();
+		
 		Util.consoleLog("after reset le=%d  re=%d  sl=%d  sr=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get(),
 						leftError, rightError);
 		

@@ -95,7 +95,7 @@ public class Lift
 //			}
 			
 			// hall effect sensor form.
-			if ((power > 0 && Devices.winchEncoder.get() < 14000) ||	// 10800
+			if ((power > 0 && Devices.winchEncoder.get() < 1500) ||	// 10800
 				(power < 0 && Devices.winchSwitch.get()))
 				Devices.winchDrive.set(power);
 			else
@@ -125,7 +125,7 @@ public class Lift
 			// Setpoint is the target encoder count.
 			// The idea is that the difference between the current encoder count and the
 			// target count will apply power to bring the two counts together and stay there.
-			liftPidController.setPID(0.0003, 0.00001, 0.0003, 0.0);
+			liftPidController.setPID(0.002, 0.00005, 0.0003, 0.0);
 			//liftPidController.setPID(0.0003, 0.0, 0.0, 0.0);
 			liftPidController.setOutputRange(-1, 1);
 			liftPidController.setSetpoint(count);
@@ -166,7 +166,7 @@ public class Lift
 			// f value is the base motor speed, which is where (power) we want to hold position.
 			// Setpoint is current encoder count.
 			// The idea is that any encoder motion will alter motor base speed to hold position.
-			liftPidController.setPID(0.0003, 0.00001, 0.0003, speed);
+			liftPidController.setPID(0.002, 0.00005, 0.0003, speed);
 			liftPidController.setSetpoint(Devices.winchEncoder.get());
 			liftPidController.setPercentTolerance(1);	// % error.
 			liftPidController.enable();
@@ -185,6 +185,9 @@ public class Lift
 	{
 		if (isHoldingHatchHeight()) return;
 		
+		// Reduce power going down.
+		if (power < 0) power = power * .50;
+
 		Devices.hatchWinch.set(power);
 	}
 	

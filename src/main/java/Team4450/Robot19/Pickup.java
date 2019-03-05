@@ -79,14 +79,14 @@ public class Pickup
 		
 		if (intakeRunning)
 		{
-			Devices.ballSpit.stopMotor();
+			Devices.ballSpit.set(-.05);		// Create a braking effect to hold ball.
 			Devices.pickupMotor.stopMotor();
 			intakeRunning = false;
 		}
 		else
 		{
 			Devices.ballSpit.set(.20);
-			Devices.pickupMotor.set(.50);
+			Devices.pickupMotor.set(.60);
 			intakeRunning = true;
 		}
 	}
@@ -185,16 +185,16 @@ public class Pickup
     	    		
     	    		if (!Devices.ballSwitch.get()) ballDetected = true;
     	    		
+    	    		if  (ballDetected) Devices.ballSpit.set(.20);
+    	    		
     	    		if (ballDetected && Devices.ballSwitch.get()) break;
     	    		
     	            // We sleep since JS updates come from DS every 20ms or so. We wait 50ms so this thread
     	            // does not run at the same time as the teleop thread.
-    	            sleep(50);
+    	            sleep(30);
     	    	}
     	    	
     	    	if (!interrupted() && robot.isEnabled()) Util.consoleLog("  ball loaded");
-    	    	
-    	    	sleep(100);
 	    	}
 	    	catch (InterruptedException e) { intakeBall(); }
 	    	catch (Throwable e) { e.printStackTrace(Util.logPrintStream); }
