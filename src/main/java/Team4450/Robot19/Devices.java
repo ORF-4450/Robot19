@@ -166,7 +166,7 @@ public class Devices
 		  ballSpit = new WPI_VictorSPX(10);
 		  hatchWinch = new VictorSP(0);
 		  
-		  winchEncoder.setReverseDirection(false);
+		  winchEncoder.setReverseDirection(true);
 		  hatchEncoder.setReverseDirection(false);
 		  
 		  leftWinch.setNeutralMode(NeutralMode.Brake);
@@ -180,7 +180,10 @@ public class Devices
 		  // Setup a SpeedControllerGroup for the left and right winch drive motors.
 	     winchDrive = new SpeedControllerGroup(leftWinch, rightWinch);	     
 	     
-	     unusedValve.Close();
+	     unusedValve.solenoidSlideTime = .10;
+	     highLowValve.solenoidSlideTime = .10;
+   		 rearClimbValve.solenoidSlideTime = .10;
+   		 pickupValve.solenoidSlideTime = .10;
 	  }
 
 	  // Initialize and Log status indication from CANTalon. If we see an exception

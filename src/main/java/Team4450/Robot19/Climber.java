@@ -1,6 +1,7 @@
 package Team4450.Robot19;
 
 import Team4450.Lib.Util;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber 
 {
@@ -71,6 +72,8 @@ public class Climber
 		Devices.frontClimbValve.Open();
 		
 		frontClimbExtended = true;
+		
+		updateDS();
 	}
 	
 	public void retractFrontClimb(boolean override)
@@ -82,6 +85,8 @@ public class Climber
 		Devices.frontClimbValve.Close();
 		
 		frontClimbExtended = false;
+		
+		updateDS();
 	}
 	
 	public void extendRearClimb(boolean override)
@@ -93,6 +98,8 @@ public class Climber
 		Devices.rearClimbValve.Open();
 		
 		rearClimbExtended = true;
+		
+		updateDS();
 	}
 	
 	public void retractRearClimb()
@@ -102,5 +109,13 @@ public class Climber
 		Devices.rearClimbValve.Close();
 		
 		rearClimbExtended = false;
+		
+		updateDS();
+	}
+
+	private void updateDS()
+	{
+		SmartDashboard.putBoolean("FrontClimbExtended", frontClimbExtended);
+		SmartDashboard.putBoolean("RearClimbExtended", rearClimbExtended);
 	}
 }

@@ -20,6 +20,7 @@ public class Autonomous
 	private AutoProgram			program = AutoProgram.NoProgram;
 	private final GearBox		gearBox;
 	private LaunchPad			launchPad;
+	private Lift				lift;
 	private boolean				abortAutonomous = false;
 	
 	private static SendableChooser<AutoProgram>	autoChooser;
@@ -37,6 +38,8 @@ public class Autonomous
 		this.robot = robot;
 		
 		gearBox = GearBox.getInstance(robot);
+		
+		lift = Lift.getInstance(robot);
 		
 		Util.consoleLog("Automomous created!");
 	}
@@ -62,6 +65,8 @@ public class Autonomous
 		
 		if (gearBox != null) gearBox.dispose();
 		if (launchPad != null) launchPad.dispose();
+		
+		// Not disposing of lift because we want lift position to carry over to teleop.
 		
 		autonomous = null;
 	}
@@ -130,7 +135,7 @@ public class Autonomous
 		int rightError = Devices.rightEncoder.reset(2);
 		int leftError = Devices.leftEncoder.reset(110);
 		
-		// We expect hatch mech to be at its highest position at start so we reset and
+		// We expect hatch mechanism to be at its highest position at start so we reset and
 		// zero means at the top.
 		Devices.hatchEncoder.reset();
 		
@@ -326,12 +331,13 @@ public class Autonomous
 		Util.consoleLog();
 		
 		if (launchPad != null) launchPad.dispose();
+		
 		launchPad = null;
 
 		robot.operatorControl();
 	}
 
-	// Createss left and right path file names from path name and alliance color.
+	// Creates left and right path file names from path name and alliance color.
 	private void pathSelector(AutoProgram pathName, DriverStation.Alliance allianceColor)
 	{
 		String rightPathFile;

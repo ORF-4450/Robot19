@@ -67,7 +67,10 @@ public class Lift
 	
 	public void updateDS()
 	{
-		SmartDashboard.putBoolean("TargetLocked", holdingHeight);
+		SmartDashboard.putBoolean("LiftHoldingHeight", holdingHeight);
+		SmartDashboard.putBoolean("LiftHoldingPosition", holdingPosition);
+		SmartDashboard.putBoolean("HatchHoldingHeight", holdingHatchHeight);
+		SmartDashboard.putBoolean("HatchReleased", hatchReleased);
 	}
 	
 	// Set lift winch motors to arbitrary power with top and bottom detection.
@@ -77,7 +80,10 @@ public class Lift
 		if (isHoldingHeight()) return;
 		
 		// Reduce power going down.
-		if (power < 0) power = power * .50;
+		if (power < 0) 
+			power = -.20;
+		else
+			power = .20;
 		
 		if (Devices.winchEncoderEnabled)
 		{
@@ -95,7 +101,7 @@ public class Lift
 //			}
 			
 			// hall effect sensor form.
-			if ((power > 0 && Devices.winchEncoder.get() < 1500) ||	// 10800
+			if ((power > 0 && Devices.winchEncoder.get() < 1400) ||	// 10800
 				(power < 0 && Devices.winchSwitch.get()))
 				Devices.winchDrive.set(power);
 			else
@@ -109,6 +115,7 @@ public class Lift
 			Devices.winchDrive.set(power);
 	}
 	
+	// 380 cargo ship  749 rocket lv2  1349 rocket lv3
 	// Automatically move lift to specified encoder count and hold it there.
 	// count < 0 turns pid controller off.
 	
@@ -186,8 +193,10 @@ public class Lift
 		if (isHoldingHatchHeight()) return;
 		
 		// Reduce power going down.
-		if (power < 0) power = power * .50;
-
+		//if (power < 0) power = power * .50;
+		
+		power = power * .15;
+		
 		Devices.hatchWinch.set(power);
 	}
 	
@@ -218,6 +227,8 @@ public class Lift
 			hatchPidController.disable();
 			holdingHatchHeight = false;
 		}
+		
+		updateDS();
 	}
 	
 	public boolean isHoldingHatchHeight()
@@ -232,6 +243,8 @@ public class Lift
 		Devices.hatchReleaseValve.Open();
 		
 		hatchReleased = true;
+		
+		updateDS();
 	}
 	
 	public void resetHatch()
@@ -241,6 +254,8 @@ public class Lift
 		Devices.hatchReleaseValve.Close();
 		
 		hatchReleased = false;
+		
+		updateDS();
 	}
 
 	public boolean isHatchReleased()

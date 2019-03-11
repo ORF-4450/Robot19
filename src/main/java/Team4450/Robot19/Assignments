@@ -76,25 +76,26 @@ Button Name				Function
 TRIGGER					Enable H driving mode.
 Y Axis					Forward/Backward tank driving.
 X Axis					Left/Right H driving.
+TOP_MIDDLE				Cargo height.
 
 
 Utility Joystick
 Button Name				Function
 -----------------------------------------------------------------------------------
 Y Axis					Lift winch motors. +/back goes up. While TOP_BACK, run 
-							hatchMotor (Need to test right direction).
-TRIGGER                 Hatch piston (toggle out and in) (still needs to be tested).
-TOP_LEFT                Runs Intake motors to intake the ball. (Verified correct direction).   
-TOP_RIGHT               Runs BallSpit Motor to spit out the ball. (Verified correct direction).
-TOP_MIDDLE              Runs AutoIntake() Thread. (Still needs testing).
-TOP_BACK                While pressed allow for hatchWinch to be controlled (Needs testing).
+							hatchMotor.
+TRIGGER                 Hatch piston (toggle out and in).
+TOP_LEFT                Runs Intake motors to intake the ball.   
+TOP_RIGHT               Runs BallSpit Motor to spit out the ball.
+TOP_MIDDLE              Runs AutoIntake() Thread.
+TOP_BACK                While pressed allow for hatchWinch to be controlled.
 
 
 LaunchPad
 Button Name				Function
 -----------------------------------------------------------------------------------
 BUTTON_RED				Abort Auto Program. Reset wheel encoders in teleop.
-BUTTON_GREEN			Shift gears.
+BUTTON_GREEN			Toggle height of hatch holder.
 BUTTON_RED_RIGHT        Set lift position to 3rd level.
 BUTTON_YELLOW           Set lift position to 2nd level.
 BUTTON_BLUE_RIGHT       Deploy pickup arm.

@@ -129,7 +129,7 @@ class Teleop
 
 		rightStick = new JoyStick(Devices.rightStick, "RightStick", JoyStickButtonIDs.TRIGGER, this);
 		//Example on how to track button:
-		//rightStick.AddButton(JoyStickButtonIDs.BUTTON_NAME_HERE);
+		rightStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
 		rightStick.addJoyStickEventListener(new RightStickListener());
 		rightStick.Start();
 		
@@ -157,10 +157,7 @@ class Teleop
 		// launch pad as the one that controls brake mode.
 		//if (robot.isComp) Devices.SetCANTalonBrakeMode(lpControl.latchedState);
 		
-		// Post season testing showed Anakin liked this setting, smoothing driving.
-		// He also asked for brakes off in low gear, brakes on in high. See GearBox.
-		// It controls brake setting. This will need to be checked each year to see
-		// if these settings are appropriate for each new  robot.
+		// 2018 post season testing showed Anakin liked this setting, smoothing driving.
 		Devices.SetCANTalonRampRate(0.5);
 		
 		// Set Navx current yaw to 0.
@@ -184,17 +181,24 @@ class Teleop
 			// Get joystick deflection and feed to robot drive object
 			// using calls to our JoyStick class.
 
-			rightY = stickLogCorrection(rightStick.GetY());	// fwd/back
-			leftY = stickLogCorrection(leftStick.GetY());	// fwd/back
+			rightY = stickLogCorrection(rightStick.GetY() * .90);	// fwd/back
+			leftY = stickLogCorrection(leftStick.GetY() * 90);	// fwd/back
 
 			rightX = stickLogCorrection(rightStick.GetX());	// left/right
 			leftX = stickLogCorrection(leftStick.GetX());	// left/right
+			
+			//rightY = rightStick.GetY();	// fwd/back
+			//leftY = leftStick.GetY();	// fwd/back
+
+			//rightX = rightStick.GetX();	// left/right
+			//leftX = leftStick.GetX();	// left/right
 
 			utilY = utilityStick.GetY();
 
 			LCD.printLine(2, "leftenc=%d  rightenc=%d - wEnc=%d  hEnc=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get(), 
 					Devices.winchEncoder.get(), Devices.hatchEncoder.get());			
-			LCD.printLine(3, "leftY=%.3f  rightY=%.3f  rightX=%.3f  utilY=%.3f", leftY, rightY, rightX, utilY);
+			LCD.printLine(3, "leftY=%.3f (%.3f)  rightY=%.3f (%.3f)  rightX=%.3f  utilY=%.3f", leftY, 
+					 Devices.LRCanTalon.get(),rightY, Devices.RRCanTalon.get(), rightX, utilY);
 			LCD.printLine(4, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), 
 					Devices.navx.getTotalYaw(), Devices.navx.getYawRate(), Devices.navx.getHeading());
 			LCD.printLine(5, "wEnc=%d  hEnc=%d", Devices.winchEncoder.get(), Devices.hatchEncoder.get());
@@ -249,14 +253,13 @@ class Teleop
 					else
 					{
 						steeringAssistMode = false;
-						Devices.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
+						Devices.robotDrive.tankDrive(leftY, rightY);	// Normal tank drive.
 					}
 
 					SmartDashboard.putBoolean("SteeringAssist", steeringAssistMode);
 				}
 				else
 					Devices.robotDrive.tankDrive(leftY, rightY);		// Normal tank drive.
-					//steeringAssistMode = false;
 				
 					// This shows how to use curvature drive mode, toggled by trigger (for testing).
 					//Devices.robotDrive.curvatureDrive(rightY, rightX, rightStick.GetLatchedState(JoyStickButtonIDs.TRIGGER));
@@ -266,14 +269,14 @@ class Teleop
 
 			if (utilityStick.GetCurrentState(JoyStickButtonIDs.TOP_BACK))
 			{
-				if (lift.isHoldingHeight()) lift.setWinchPower(0);
+				//if (lift.isHoldingHeight()) lift.setHeight(-1);
 				
-				lift.setHatchPower(utilY);
+				lift.setHatchPower(utilY);	//squareInput(utilY));
 			}
 			else
 			{
-				//lift.setHatchPower(0);
-				lift.setWinchPower(utilY);
+				lift.setHatchPower(0);
+				lift.setWinchPower(Util.squareInput(utilY));
 			}
 			
 			// Update the robot heading indicator on the DS. Only for labview DB.
@@ -297,6 +300,15 @@ class Teleop
 		Util.consoleLog("end");
 	}
 
+//	// This method scales the input values less than 1.0 down but on a sliding scale
+//	// so that 1.0 input returns 1.0 output. This is what is in the DifferentialDrive.tankDrive
+//	// method that scales input to reduce sensitivity.
+//	
+//	private double squareInput(double input)
+//	{
+//		return Math.copySign(input * input, input);	
+//	}
+	
 	private boolean isLeftRightEqual(double left, double right, double percent)
 	{
 		if (Math.abs(left - right) <= (1 * (percent / 100))) return true;
@@ -340,10 +352,15 @@ class Teleop
 			switch(control.id)
 			{
 				case BUTTON_GREEN:
-					if (gearBox.isLowSpeed())
-		    			gearBox.highSpeed();
-		    		else
-		    			gearBox.lowSpeed();
+//					if (gearBox.isLowSpeed())
+//		    			gearBox.highSpeed();
+//		    		else
+//		    			gearBox.lowSpeed();
+		
+					if (control.latchedState)
+						lift.setHatchHeight(-100);
+					else
+						lift.setHatchHeight(-200);
 					
 					break;
 					
@@ -358,11 +375,15 @@ class Teleop
 					else
 						climber.extendFrontClimb(true);
 					
+					break;
+					
 				case BUTTON_BLACK:
 					if (climber.isRearExtended())
 						climber.retractRearClimb();
 					else
 						climber.extendRearClimb(true);
+					
+					break;
 					
 				case BUTTON_BLUE_RIGHT:
 					//lift.setHeight(1000);
@@ -370,13 +391,14 @@ class Teleop
 						pickup.retract();
 					else
 						pickup.extend();
+					
 					break;
 					
 				case BUTTON_RED_RIGHT:
 					if (lift.isHoldingHeight())
 						lift.setHeight(-1);
 					else
-						lift.setHeight(500);
+						lift.setHeight(1250);
 					
 					break;
 					
@@ -384,7 +406,7 @@ class Teleop
 					if (lift.isHoldingHeight())
 						lift.setHeight(-1);
 					else
-						lift.setHeight(400);
+						lift.setHeight(750);
 					
 					break;
 					
@@ -452,6 +474,12 @@ class Teleop
 					DoOtherThing();
 				break;
 			 */
+				
+				case TOP_MIDDLE:
+					if (lift.isHoldingHeight())
+						lift.setHeight(-1);
+					else
+						lift.setHeight(350);
 					
 				default:
 					break;

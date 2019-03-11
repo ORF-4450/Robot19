@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 @SuppressWarnings("deprecation")
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC19-03.04.19-01";
+  static final String  	PROGRAM_NAME = "RAC19-03.10.19-01";
 
   public Properties		robotProperties;
   
@@ -201,7 +201,7 @@ public class Robot extends SampleRobot
 		  SmartDashboard.putBoolean("Overload", false);
 		  SmartDashboard.putNumber("AirPressure", 0);
 
-		  lastRobotState = currentRobotState;
+		  //lastRobotState = currentRobotState;
 
 		  Util.consoleLog("end");
 	  }
@@ -231,6 +231,8 @@ public class Robot extends SampleRobot
     	  
     	  // This code turns off the automatic compressor management if requested by DS.
     	  Devices.compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
+  	     
+          Devices.unusedValve.Close();
 
     	  // Reset persistent fault flags in control system modules.
     	  Devices.pdp.clearStickyFaults();
@@ -282,7 +284,9 @@ public class Robot extends SampleRobot
 
           // This code turns off the automatic compressor management if requested by DS.
           Devices.compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
-        
+ 	     
+          Devices.unusedValve.Close();
+
           // Start operator control process contained in the Teleop class.
         
           teleOp = Teleop.getInstance(this);

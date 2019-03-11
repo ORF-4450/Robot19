@@ -57,6 +57,8 @@ public class Pickup
 		Devices.pickupValve.SetA();
 		
 		extended = true;
+		
+		updateDS();
 	}
 	
 	public void retract()
@@ -66,6 +68,8 @@ public class Pickup
 		Devices.pickupValve.SetB();
 		
 		extended = false;
+		
+		updateDS();
 	}
 	
 	public boolean isExtended()
@@ -82,13 +86,17 @@ public class Pickup
 			Devices.ballSpit.set(-.05);		// Create a braking effect to hold ball.
 			Devices.pickupMotor.stopMotor();
 			intakeRunning = false;
+			retract();
 		}
 		else
 		{
+			extend();
 			Devices.ballSpit.set(.20);
-			Devices.pickupMotor.set(.60);
+			Devices.pickupMotor.set(.70);
 			intakeRunning = true;
 		}
+		
+		updateDS();
 	}
 	
 	public boolean isIntakeRunning()
@@ -106,13 +114,17 @@ public class Pickup
 		
 		spitRunning = true;
 		
-		Devices.ballSpit.set(.50);
+		Devices.ballSpit.set(.60);
+		Devices.pickupMotor.set(-.60);
 
 		Timer.delay(.5);
 		
 		Devices.ballSpit.stopMotor();
+		Devices.pickupMotor.stopMotor();
 		
 		spitRunning = false;
+		
+		updateDS();
 	}
 	
 	public boolean isSpitRunning()
@@ -202,6 +214,7 @@ public class Pickup
 			
 	    	autoIntake = false;
 			autoIntakeThread = null;
+			
 			updateDS();
 	    }
 	}	// end of AutoIntake thread class.
@@ -211,5 +224,6 @@ public class Pickup
 		SmartDashboard.putBoolean("Intake", intakeRunning);
 		SmartDashboard.putBoolean("Spit", spitRunning);
 		SmartDashboard.putBoolean("AutoIntake", autoIntake);
+		SmartDashboard.putBoolean("IntakeExtended", extended);
 	}
 }
