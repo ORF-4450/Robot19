@@ -79,11 +79,11 @@ public class Lift
 	{
 		if (isHoldingHeight()) return;
 		
-		// Reduce power going down.
+		// Limit power going down.
 		if (power < 0) 
-			power = -.20;
+			power = -.10;
 		else
-			power = .20;
+			power = power * 1.0;
 		
 		if (Devices.winchEncoderEnabled)
 		{

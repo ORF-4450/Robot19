@@ -22,6 +22,8 @@ public class Pickup
 	*/
 	public static Pickup getInstance(Robot robot) 
 	{
+		Util.consoleLog();
+		
 		if (pickup == null) pickup = new Pickup(robot);
 		
 		return pickup;
@@ -31,6 +33,8 @@ public class Pickup
 	
 	private Pickup(Robot robot) 
 	{
+		Util.consoleLog();
+		
 		this.robot = robot;
 		
 		retract();
@@ -178,7 +182,11 @@ public class Pickup
 	    {
 	    	boolean ballDetected = false;
 	    	
-	    	Util.consoleLog();
+	    	int lightLevel = Devices.ballSensor.getValue();
+	    	
+	    	Util.consoleLog("%d", lightLevel);
+	    	
+	    	lightLevel -= 200;
 	    	
 	    	try
 	    	{
@@ -200,6 +208,12 @@ public class Pickup
     	    		if  (ballDetected) Devices.ballSpit.set(.20);
     	    		
     	    		if (ballDetected && Devices.ballSwitch.get()) break;
+    	    		
+    	    		if (extended && Devices.ballSensor.getValue() < lightLevel)
+    	    		{
+    	    			Util.consoleLog("ball passed=%d", Devices.ballSensor.getValue());
+    	    			retract();
+    	    		}
     	    		
     	            // We sleep since JS updates come from DS every 20ms or so. We wait 50ms so this thread
     	            // does not run at the same time as the teleop thread.

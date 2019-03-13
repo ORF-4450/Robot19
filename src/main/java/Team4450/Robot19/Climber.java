@@ -19,6 +19,8 @@ public class Climber
 	*/
 	public static Climber getInstance(Robot robot) 
 	{
+		Util.consoleLog();
+		
 		if (climber == null) climber = new Climber(robot);
 		
 		return climber;
@@ -28,6 +30,8 @@ public class Climber
 	
 	private Climber(Robot robot) 
 	{
+		Util.consoleLog();
+		
 		this.robot = robot;
 		
 		retractFrontClimb(true);

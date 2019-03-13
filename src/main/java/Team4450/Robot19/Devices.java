@@ -76,6 +76,8 @@ public class Devices
 	  
 	  public static DigitalInput		winchSwitch = new DigitalInput(4);
 	  public static DigitalInput		ballSwitch = new DigitalInput(5);
+	  
+	  public static AnalogInput			ballSensor = new AnalogInput(1);
 
 	  // SRX magnetic encoder plugged into a CAN Talon.
 	  public static SRXMagneticEncoderRelative	leftEncoder, rightEncoder;
@@ -154,6 +156,9 @@ public class Devices
 		  
 		  leftSpark.setIdleMode(IdleMode.kBrake);
 		  rightSpark.setIdleMode(IdleMode.kBrake);
+		  
+		  leftSpark.setOpenLoopRampRate(2.0);
+		  rightSpark.setOpenLoopRampRate(2.0);
 
 		  // Setup a SpeedControllerGroup for the left and right H drive motors.
 	      hDrive = new SpeedControllerGroup(leftSpark, rightSpark);

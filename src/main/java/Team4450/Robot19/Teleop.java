@@ -101,29 +101,30 @@ class Teleop
 
 		// Configure LaunchPad and Joystick event handlers.
 
-		launchPad = new LaunchPad(Devices.launchPad, LaunchPadControlIDs.BUTTON_RED, this);
-
-		LaunchPadControl lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_BACK);
-		lpControl.controlType = LaunchPadControlTypes.SWITCH;
-
-		lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_FRONT);
-		lpControl.controlType = LaunchPadControlTypes.SWITCH;
-
-		lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_RIGHT);
-		lpControl.controlType = LaunchPadControlTypes.SWITCH;
-
-		launchPad.AddControl(LaunchPadControlIDs.BUTTON_GREEN);
-		launchPad.AddControl(LaunchPadControlIDs.BUTTON_YELLOW);
-		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLUE);
-		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLUE_RIGHT);
-		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLACK);
-		launchPad.AddControl(LaunchPadControlIDs.BUTTON_RED_RIGHT);
+		launchPad = new LaunchPad(Devices.launchPad, this);
+//		launchPad = new LaunchPad(Devices.launchPad, LaunchPadControlIDs.BUTTON_RED, this);
+//
+//		LaunchPadControl lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_BACK);
+//		lpControl.controlType = LaunchPadControlTypes.SWITCH;
+//
+//		lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_FRONT);
+//		lpControl.controlType = LaunchPadControlTypes.SWITCH;
+//
+//		lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_RIGHT);
+//		lpControl.controlType = LaunchPadControlTypes.SWITCH;
+//
+//		launchPad.AddControl(LaunchPadControlIDs.BUTTON_GREEN);
+//		launchPad.AddControl(LaunchPadControlIDs.BUTTON_YELLOW);
+//		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLUE);
+//		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLUE_RIGHT);
+//		launchPad.AddControl(LaunchPadControlIDs.BUTTON_BLACK);
+//		launchPad.AddControl(LaunchPadControlIDs.BUTTON_RED_RIGHT);
 		launchPad.addLaunchPadEventListener(new LaunchPadListener());
-		launchPad.Start();
+//		launchPad.Start();
 
 		leftStick = new JoyStick(Devices.leftStick, "LeftStick", JoyStickButtonIDs.TRIGGER, this);
 		//Example on how to track button:
-		//leftStick.AddButton(JoyStickButtonIDs.BUTTON_NAME_HERE);
+		leftStick.AddButton(JoyStickButtonIDs.TOP_BACK);
 		leftStick.addJoyStickEventListener(new LeftStickListener());
 		leftStick.Start();
 
@@ -136,20 +137,21 @@ class Teleop
 		// Invert for h drive correct direction.
 		//rightStick.invertX(true);
 
-		utilityStick = new JoyStick(Devices.utilityStick, "UtilityStick", JoyStickButtonIDs.TRIGGER, this);
-		//Example on how to track button:
-		utilityStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
-		utilityStick.AddButton(JoyStickButtonIDs.TOP_LEFT);
-		utilityStick.AddButton(JoyStickButtonIDs.TOP_RIGHT);
-		utilityStick.AddButton(JoyStickButtonIDs.TOP_BACK);
+		utilityStick = new JoyStick(Devices.utilityStick, "UtilityStick", this);
+//		utilityStick = new JoyStick(Devices.utilityStick, "UtilityStick", JoyStickButtonIDs.TRIGGER, this);
+//		//Example on how to track button:
+//		utilityStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
+//		utilityStick.AddButton(JoyStickButtonIDs.TOP_LEFT);
+//		utilityStick.AddButton(JoyStickButtonIDs.TOP_RIGHT);
+//		utilityStick.AddButton(JoyStickButtonIDs.TOP_BACK);
 		utilityStick.addJoyStickEventListener(new UtilityStickListener());
-		utilityStick.Start();
+//		utilityStick.Start();
 
 		// Invert driving joy sticks Y axis so + values mean forward.
 		leftStick.invertY(true);
 		rightStick.invertY(true);
 		
-		utilityStick.deadZoneY(.10);
+		utilityStick.deadZoneY(.20);
 
 		// Set CAN Talon brake mode by rocker switch setting.
 		// We do this here so that the Utility stick thread has time to read the initial state
@@ -175,41 +177,51 @@ class Teleop
 		// Driving loop runs until teleop is over.
 
 		Util.consoleLog("enter driving loop");
+		boolean firsttime = true;
 		
 		while (robot.isEnabled())	// && robot.isOperatorControl())
 		{
 			// Get joystick deflection and feed to robot drive object
 			// using calls to our JoyStick class.
 
-			rightY = stickLogCorrection(rightStick.GetY() * .90);	// fwd/back
-			leftY = stickLogCorrection(leftStick.GetY() * 90);	// fwd/back
+			//rightY = stickLogCorrection(rightStick.GetY());	// fwd/back
+			//leftY = stickLogCorrection(leftStick.GetY());	// fwd/back
 
-			rightX = stickLogCorrection(rightStick.GetX());	// left/right
-			leftX = stickLogCorrection(leftStick.GetX());	// left/right
+			//rightX = stickLogCorrection(rightStick.GetX());	// left/right
+			//leftX = stickLogCorrection(leftStick.GetX());	// left/right
 			
-			//rightY = rightStick.GetY();	// fwd/back
-			//leftY = leftStick.GetY();	// fwd/back
+			rightY = rightStick.GetY();	// fwd/back
+			leftY = leftStick.GetY();	// fwd/back
 
-			//rightX = rightStick.GetX();	// left/right
-			//leftX = leftStick.GetX();	// left/right
+			rightX = rightStick.GetX();	// left/right
+			leftX = leftStick.GetX();	// left/right
 
 			utilY = utilityStick.GetY();
 
 			LCD.printLine(2, "leftenc=%d  rightenc=%d - wEnc=%d  hEnc=%d", Devices.leftEncoder.get(), Devices.rightEncoder.get(), 
 					Devices.winchEncoder.get(), Devices.hatchEncoder.get());			
-			LCD.printLine(3, "leftY=%.3f (%.3f)  rightY=%.3f (%.3f)  rightX=%.3f  utilY=%.3f", leftY, 
-					 Devices.LRCanTalon.get(),rightY, Devices.RRCanTalon.get(), rightX, utilY);
+			LCD.printLine(3, "leftY=%.3f (%.3f)  rightY=(%.3f) %.3f (%.3f)  rightX=%.3f  utilY=%.3f", leftY, 
+					 Devices.LRCanTalon.get(), rightStick.GetY(), rightY, Devices.RRCanTalon.get(), rightX, utilY);
 			LCD.printLine(4, "yaw=%.2f, total=%.2f, rate=%.2f, hdng=%.2f", Devices.navx.getYaw(), 
 					Devices.navx.getTotalYaw(), Devices.navx.getYawRate(), Devices.navx.getHeading());
 			LCD.printLine(5, "wEnc=%d  hEnc=%d", Devices.winchEncoder.get(), Devices.hatchEncoder.get());
-			LCD.printLine(6, "wSwitch=%b  ballsw=%b", Devices.winchSwitch.get(), Devices.ballSwitch.get());
+			LCD.printLine(6, "wSwitch=%b  ballsw=%b  ballsensor=%d", Devices.winchSwitch.get(), Devices.ballSwitch.get(),
+					Devices.ballSensor.getValue());
 			LCD.printLine(10, "pressureV=%.2f  psi=%d  ustb=%b", robot.monitorCompressorThread.getVoltage(), 
 					robot.monitorCompressorThread.getPressure(), utilityStick.GetCurrentState(JoyStickButtonIDs.TOP_BACK));
 			
-			// set H drive motors.
+			// set H drive motors. Apply some proportional power to drive wheels to counter the
+			// H drive tendency to drive in an arc.
 			
 			if (!autoTarget && rightStick.GetCurrentState(JoyStickButtonIDs.TRIGGER))
+			{
 				Devices.hDrive.set(rightX * .50);
+				
+				if (rightX < 0)
+					leftY = Math.abs(rightX) * .50;
+				else
+					rightY = rightX * .50;
+			}
 			else
 				Devices.hDrive.set(0);
 			
@@ -265,6 +277,10 @@ class Teleop
 					//Devices.robotDrive.curvatureDrive(rightY, rightX, rightStick.GetLatchedState(JoyStickButtonIDs.TRIGGER));
 			}
 
+			if (firsttime) Util.consoleLog("after tank drive");
+			
+			firsttime = false;
+			
 			// Set lift winch/hatch winch power.
 
 			if (utilityStick.GetCurrentState(JoyStickButtonIDs.TOP_BACK))
@@ -347,7 +363,7 @@ class Teleop
 		{
 			LaunchPadControl	control = launchPadEvent.control;
 
-			Util.consoleLog("%s, latchedState=%b", control.id.name(),  control.latchedState);
+			Util.consoleLog("%s, latchedState=%b ord=%d hc=%d %s", control.id.name(),  control.latchedState, control.id.ordinal(), control.id.hashCode(), control.id.getClass().toString());
 
 			switch(control.id)
 			{
@@ -370,6 +386,7 @@ class Teleop
 					break;
 					
 				case BUTTON_BLUE:
+					Util.consoleLog("blue");
 					if (climber.isFrontExtended())
 						climber.retractFrontClimb(true);	// Remove overrides after testing.
 					else
@@ -510,6 +527,10 @@ class Teleop
 	    			else
 	    				gearBox.lowSpeed();
 
+					break;
+					
+				case TOP_BACK:
+					altDriveMode = !altDriveMode;
 					break;
 					
 				default:
