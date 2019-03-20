@@ -9,7 +9,7 @@ public class Lift
 {
 	private Robot robot;
 	private boolean				holdingPosition = false, holdingHeight = false, holdingHatchHeight = false;
-	private boolean				hatchReleased = false;
+	private boolean				hatchReleased = false, hatchMidPosition = false;
 	private final PIDController	liftPidController, hatchPidController;
 
 	// This variable used to make this class is a singleton.
@@ -40,7 +40,9 @@ public class Lift
 		
 		Devices.winchEncoder.reset();
 		Devices.hatchEncoder.reset();
-		resetHatch();
+		
+		// Set hatch grabber to hold hatch position.
+		grabHatch();
 				
 		updateDS();
 		
@@ -79,7 +81,7 @@ public class Lift
 	{
 		if (isHoldingHeight()) return;
 		
-		// Limit power going down.
+		// Limit power going down. May limit going up as well.
 		if (power < 0) 
 			power = -.10;
 		else
@@ -101,7 +103,7 @@ public class Lift
 //			}
 			
 			// hall effect sensor form.
-			if ((power > 0 && Devices.winchEncoder.get() < 1400) ||	// 10800
+			if ((power > 0 && Devices.winchEncoder.get() < 1500) ||	// 10800
 				(power < 0 && Devices.winchSwitch.get()))
 				Devices.winchDrive.set(power);
 			else
@@ -127,12 +129,14 @@ public class Lift
 		{
 			if (isHoldingPosition()) holdPosition(0);
 			
-			// p,i,d values are a guess.
-			// f value is the motor power to apply to move to encoder target count.
+			// p,i,d values are a guess. p is based on 750 range * .0002 = .15 max power.
+			// i,d values start at 0 and are adjusted to reduce overshoot and speed to 
+			// reach steady state.
+			// f value is the base motor power to apply to move to encoder target count.
 			// Setpoint is the target encoder count.
 			// The idea is that the difference between the current encoder count and the
 			// target count will apply power to bring the two counts together and stay there.
-			liftPidController.setPID(0.002, 0.00005, 0.0003, 0.0);
+			liftPidController.setPID(0.0002, 0.00005, 0.0003, 0.0);
 			//liftPidController.setPID(0.0003, 0.0, 0.0, 0.0);
 			liftPidController.setOutputRange(-1, 1);
 			liftPidController.setSetpoint(count);
@@ -173,8 +177,9 @@ public class Lift
 			// f value is the base motor speed, which is where (power) we want to hold position.
 			// Setpoint is current encoder count.
 			// The idea is that any encoder motion will alter motor base speed to hold position.
-			liftPidController.setPID(0.002, 0.00005, 0.0003, speed);
+			liftPidController.setPID(0.0002, 0.00005, 0.0003, speed);
 			liftPidController.setSetpoint(Devices.winchEncoder.get());
+			liftPidController.setOutputRange(-1, 1);
 			liftPidController.setPercentTolerance(1);	// % error.
 			liftPidController.enable();
 			holdingPosition = true;
@@ -195,7 +200,7 @@ public class Lift
 		// Reduce power going down.
 		//if (power < 0) power = power * .50;
 		
-		power = power * .15;
+		power = power * .25;
 		
 		Devices.hatchWinch.set(power);
 	}
@@ -214,7 +219,7 @@ public class Lift
 			// Setpoint is the target encoder count.
 			// The idea is that the difference between the current encoder count and the
 			// target count will apply power to bring the two counts together and stay there.
-			hatchPidController.setPID(0.0003, 0.00001, 0.0003, 0.0);
+			hatchPidController.setPID(0.00003, 0.00001, 0.0003, 0.0);
 			//liftPidController.setPID(0.0003, 0.0, 0.0, 0.0);
 			hatchPidController.setOutputRange(-1, 1);
 			hatchPidController.setSetpoint(count);
@@ -236,22 +241,36 @@ public class Lift
 		return holdingHatchHeight;
 	}
 	
+	public void setHatchHeightAuto()
+	{
+		if (!hatchMidPosition)
+		{
+			hatchMidPosition = true;
+			setHatchHeight(20000);
+		}
+		else
+		{
+			hatchMidPosition = false;
+			setHatchHeight(41000);
+		}
+	}
+	
 	public void releaseHatch()
 	{
 		Util.consoleLog();
 		
-		Devices.hatchReleaseValve.Open();
+		Devices.hatchReleaseValve.Close();
 		
 		hatchReleased = true;
 		
 		updateDS();
 	}
 	
-	public void resetHatch()
+	public void grabHatch()
 	{
 		Util.consoleLog();
 		
-		Devices.hatchReleaseValve.Close();
+		Devices.hatchReleaseValve.Open();
 		
 		hatchReleased = false;
 		

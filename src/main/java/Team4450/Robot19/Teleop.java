@@ -215,12 +215,12 @@ class Teleop
 			
 			if (!autoTarget && rightStick.GetCurrentState(JoyStickButtonIDs.TRIGGER))
 			{
-				Devices.hDrive.set(rightX * .50);
+				Devices.hDrive.set(rightX * .90);
 				
 				if (rightX < 0)
-					leftY = Math.abs(rightX) * .50;
+					leftY = .35;	//Math.abs(rightX) * .30;
 				else
-					rightY = rightX * .50;
+					rightY = .35;	//rightX * .30;
 			}
 			else
 				Devices.hDrive.set(0);
@@ -228,7 +228,7 @@ class Teleop
 			// Set wheel motors.
 			// Do not feed JS input to robotDrive if we are controlling the motors in automatic functions.
 
-			// Two drive modes, full tank and alternate. Switch on right stick trigger (not used 2019).
+			// Two drive modes, full tank and alternate. Switch on right stick top back.
 
 			if (!autoTarget) 
 			{
@@ -415,7 +415,12 @@ class Teleop
 					if (lift.isHoldingHeight())
 						lift.setHeight(-1);
 					else
-						lift.setHeight(1250);
+					{
+						if (robot.isComp)
+							lift.setHeight(1250);
+						else
+							lift.setHeight(1400);
+					}
 					
 					break;
 					
@@ -423,7 +428,12 @@ class Teleop
 					if (lift.isHoldingHeight())
 						lift.setHeight(-1);
 					else
-						lift.setHeight(750);
+					{
+						if (robot.isComp)
+							lift.setHeight(750);
+						else
+							lift.setHeight(724);
+					}
 					
 					break;
 					
@@ -531,6 +541,7 @@ class Teleop
 					
 				case TOP_BACK:
 					altDriveMode = !altDriveMode;
+					SmartDashboard.putBoolean("AltDriveMode", altDriveMode);
 					break;
 					
 				default:
@@ -558,7 +569,7 @@ class Teleop
 			{
 				case TRIGGER:
 					if (lift.isHatchReleased())
-						lift.resetHatch();
+						lift.grabHatch();
 					else
 						lift.releaseHatch();
 					
@@ -578,6 +589,10 @@ class Teleop
 					else
 						pickup.startAutoIntake();
 					
+					break;
+				
+				case TOP_BACK:
+					lift.setHatchHeightAuto();
 					break;
 					
 				default:

@@ -182,11 +182,7 @@ public class Pickup
 	    {
 	    	boolean ballDetected = false;
 	    	
-	    	int lightLevel = Devices.ballSensor.getValue();
-	    	
-	    	Util.consoleLog("%d", lightLevel);
-	    	
-	    	lightLevel -= 200;
+	    	Util.consoleLog("%d", Devices.ballSensor.getValue());
 	    	
 	    	try
 	    	{
@@ -209,15 +205,15 @@ public class Pickup
     	    		
     	    		if (ballDetected && Devices.ballSwitch.get()) break;
     	    		
-    	    		if (extended && Devices.ballSensor.getValue() < lightLevel)
-    	    		{
-    	    			Util.consoleLog("ball passed=%d", Devices.ballSensor.getValue());
-    	    			retract();
-    	    		}
+//    	    		if (extended && Devices.ballSensor.getValue() < 1000)
+//    	    		{
+//    	    			Util.consoleLog("ball passed=%d", Devices.ballSensor.getValue());
+//    	    			retract();
+//    	    		}
     	    		
-    	            // We sleep since JS updates come from DS every 20ms or so. We wait 50ms so this thread
+    	            // We sleep since JS updates come from DS every 20ms or so. We wait 10ms so this thread
     	            // does not run at the same time as the teleop thread.
-    	            sleep(30);
+    	            sleep(10);
     	    	}
     	    	
     	    	if (!interrupted() && robot.isEnabled()) Util.consoleLog("  ball loaded");
