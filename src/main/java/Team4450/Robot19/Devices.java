@@ -56,8 +56,8 @@ public class Devices
 	  public final static ValveDA		frontClimbValve = new ValveDA(2);		// For front lift.
 	  public final static ValveDA		rearClimbValve = new ValveDA(4);		// For rear lift.
 	  public final static ValveDA		pickupValve = new ValveDA(1,0);			// For pickup arm.
-	  public final static ValveDA		unusedValve = new ValveDA(6);
-	  public final static ValveSA		hatchReleaseValve = new ValveSA(1, 2);	// release hatch.
+	  public final static ValveDA		hatchReleaseValve = new ValveDA(6);
+	  //public final static ValveSA		hatchReleaseValve = new ValveSA(1, 2);	// release hatch.
 	  
 	  public final static AnalogInput	pressureSensor = new AnalogInput(0);
 	  
@@ -90,7 +90,7 @@ public class Devices
 	  
 	  // Initialize motor controllers, groups and encoders.
 	  
-	  public static void InitializeCANTalonDrive()
+	  public static void configureDevices(Robot robot)
 	  {
 		  Util.consoleLog();
 
@@ -171,7 +171,11 @@ public class Devices
 		  ballSpit = new WPI_VictorSPX(10);
 		  hatchWinch = new VictorSP(0);
 		  
-		  winchEncoder.setReverseDirection(true);
+		  if (robot.isClone)
+			  winchEncoder.setReverseDirection(false);
+		  else
+			  winchEncoder.setReverseDirection(true);
+			  
 		  hatchEncoder.setReverseDirection(false);
 		  
 		  leftWinch.setNeutralMode(NeutralMode.Brake);
@@ -185,7 +189,8 @@ public class Devices
 		  // Setup a SpeedControllerGroup for the left and right winch drive motors.
 	     winchDrive = new SpeedControllerGroup(leftWinch, rightWinch);	     
 	     
-	     unusedValve.solenoidSlideTime = .10;
+	     //unusedValve.solenoidSlideTime = .10;
+	     hatchReleaseValve.solenoidSlideTime = .10;
 	     highLowValve.solenoidSlideTime = .10;
    		 rearClimbValve.solenoidSlideTime = .10;
    		 pickupValve.solenoidSlideTime = .10;

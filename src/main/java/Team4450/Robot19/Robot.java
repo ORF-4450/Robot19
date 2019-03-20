@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 @SuppressWarnings("deprecation")
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC19-03.12.19-01";
+  static final String  	PROGRAM_NAME = "RAC19-03.19.19-01";
 
   public Properties		robotProperties;
   
@@ -125,9 +125,9 @@ public class Robot extends SampleRobot
    		Devices.pdp.clearStickyFaults();
    		Devices.compressor.clearAllPCMStickyFaults();
    		
-   		// Configure motor controllers and RobotDrive.
+   		// Configure the robot's devices (motor controllers, valves, encoders etc.).
    		
-   		Devices.InitializeCANTalonDrive();
+   		Devices.configureDevices(this);
 
    		// Configure starting motor safety;
    		
@@ -200,6 +200,8 @@ public class Robot extends SampleRobot
 		  SmartDashboard.putBoolean("TargetLocked", false);
 		  SmartDashboard.putBoolean("Overload", false);
 		  SmartDashboard.putNumber("AirPressure", 0);
+		  SmartDashboard.putBoolean("AltDriveMode", false);
+		  SmartDashboard.putBoolean("SteeringAssist", false);
 
 		  //lastRobotState = currentRobotState;
 
@@ -232,7 +234,7 @@ public class Robot extends SampleRobot
     	  // This code turns off the automatic compressor management if requested by DS.
     	  Devices.compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
   	     
-          Devices.unusedValve.Close();
+          //Devices.unusedValve.Close();
 
     	  // Reset persistent fault flags in control system modules.
     	  Devices.pdp.clearStickyFaults();
@@ -285,7 +287,7 @@ public class Robot extends SampleRobot
           // This code turns off the automatic compressor management if requested by DS.
           Devices.compressor.setClosedLoopControl(SmartDashboard.getBoolean("CompressorEnabled", true));
  	     
-          Devices.unusedValve.Close();
+          //Devices.unusedValve.Close();
 
           // Start operator control process contained in the Teleop class.
         

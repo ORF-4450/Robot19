@@ -32,8 +32,8 @@ Port	Device blk-pos	Description
 3		ValveDA	1		B Side front climb. Retracts.
 4		ValveDA	2		A side rear climb. Extends.
 5		ValveDA	2		B side rear climb. Retracts.
-6		ValveDA 3		A side unused. Valve appears to be broken.
-7		ValveDA 3		B side unused. Valve appears to be broken.
+6		ValveDA 3		A side Hatch grabber grab. //unused. Valve appears to be broken.
+7		ValveDA 3		B side Hatch grabber release. //unused. Valve appears to be broken.
 
 
 PCM 1 Ports
@@ -41,7 +41,7 @@ Port	Device blk-pos	Description
 -----------------------------------------------------------------------------------
 0		ValveDA 4		A side pickup extends.
 1		ValveDA 4		B Side pickup retracts.
-2		ValveSA 5		A side Hatch release.
+2		ValveSA 5		A side Not used.
 3		ValveSA 5		B side Not used.
 
 
@@ -76,7 +76,7 @@ Button Name				Function
 TRIGGER					Enable H driving mode.
 Y Axis					Forward/Backward tank driving.
 X Axis					Left/Right H driving.
-TOP_MIDDLE				Cargo height.
+TOP_MIDDLE				Cargo auto height.
 
 
 Utility Joystick
@@ -84,7 +84,7 @@ Button Name				Function
 -----------------------------------------------------------------------------------
 Y Axis					Lift winch motors. +/back goes up. While TOP_BACK, run 
 							hatchMotor.
-TRIGGER                 Hatch piston (toggle out and in).
+TRIGGER                 Hatch Grabber (toggle open/closed).
 TOP_LEFT                Runs Intake motors to intake the ball.   
 TOP_RIGHT               Runs BallSpit Motor to spit out the ball.
 TOP_MIDDLE              Runs AutoIntake() Thread.
@@ -122,4 +122,5 @@ Overload				boolean			True when steering assist is on.
 AirPressure				Number			Is set to the current air pressure in psi.
 Brakes					boolean			True when drive Talons are in brake mode.
 HDrive					boolean			True when H drive is active.
+AltDriveMode			boolean			True when alternate drive mode is enabled.
 		  
