@@ -162,6 +162,7 @@ public class Autonomous
 		
 		// Create LaunchPad to allow use of red button to abort auto program.
 		launchPad = new LaunchPad(Devices.launchPad, LaunchPadControlIDs.BUTTON_RED, this);
+		launchPad.Start();
 
 		// Determine which auto program to run as indicated by driver station.
 		switch (program)
@@ -169,6 +170,7 @@ public class Autonomous
 			case TeleOp:		// No auto program.
 				switchToTeleop();
 				break;
+				
 			case RocketLeftClose:
 				pathSelector(AutoProgram.RocketLeftClose);	
 				break;
@@ -207,7 +209,7 @@ public class Autonomous
 
 			case RocketLeftCargo:
 				pathSelector(AutoProgram.RocketLeftCargo);
-			break;
+				break;
 
 			case TestPathFinder:
 					//testPathfinder();

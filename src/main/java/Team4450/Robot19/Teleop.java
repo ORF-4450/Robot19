@@ -283,17 +283,19 @@ class Teleop
 			
 			// Set lift winch/hatch winch power.
 
-			if (utilityStick.GetCurrentState(JoyStickButtonIDs.TOP_BACK))
-			{
-				//if (lift.isHoldingHeight()) lift.setHeight(-1);
-				
-				lift.setHatchPower(utilY);	//squareInput(utilY));
-			}
-			else
-			{
-				lift.setHatchPower(0);
-				lift.setWinchPower(Util.squareInput(utilY));
-			}
+//			if (utilityStick.GetCurrentState(JoyStickButtonIDs.TOP_BACK))
+//			{
+//				//if (lift.isHoldingHeight()) lift.setHeight(-1);
+//				
+//				lift.setHatchPower(utilY);	//squareInput(utilY));
+//			}
+//			else
+//			{
+//				lift.setHatchPower(0);
+
+			lift.setWinchPower(Util.squareInput(utilY));
+
+//			}
 			
 			// Update the robot heading indicator on the DS. Only for labview DB.
 
@@ -430,7 +432,7 @@ class Teleop
 					else
 					{
 						if (robot.isComp)
-							lift.setHeight(750);
+							lift.setHeight(850);
 						else
 							lift.setHeight(724);
 					}
@@ -506,7 +508,7 @@ class Teleop
 					if (lift.isHoldingHeight())
 						lift.setHeight(-1);
 					else
-						lift.setHeight(350);
+						lift.setHeight(400);
 					
 				default:
 					break;
@@ -567,13 +569,13 @@ class Teleop
 
 			switch(button.id)
 			{
-				case TRIGGER:
-					if (lift.isHatchReleased())
-						lift.grabHatch();
-					else
-						lift.releaseHatch();
-					
-					break;
+//				case TRIGGER:
+//					if (lift.isHatchReleased())
+//						lift.grabHatch();
+//					else
+//						lift.releaseHatch();
+//					
+//					break;
 					
 				case TOP_LEFT:
 					pickup.intakeBall();

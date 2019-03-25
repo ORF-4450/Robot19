@@ -205,11 +205,11 @@ public class Pickup
     	    		
     	    		if (ballDetected && Devices.ballSwitch.get()) break;
     	    		
-//    	    		if (extended && Devices.ballSensor.getValue() < 1000)
-//    	    		{
-//    	    			Util.consoleLog("ball passed=%d", Devices.ballSensor.getValue());
-//    	    			retract();
-//    	    		}
+    	    		if (extended && Devices.ballSensor.getValue() < 700)
+    	    		{
+    	    			Util.consoleLog("ball passed=%d", Devices.ballSensor.getValue());
+    	    			//retract();
+    	    		}
     	    		
     	            // We sleep since JS updates come from DS every 20ms or so. We wait 10ms so this thread
     	            // does not run at the same time as the teleop thread.

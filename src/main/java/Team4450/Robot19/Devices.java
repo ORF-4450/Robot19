@@ -54,9 +54,9 @@ public class Devices
 
 	  public final static ValveDA		highLowValve = new ValveDA(0);			// For gearbox.
 	  public final static ValveDA		frontClimbValve = new ValveDA(2);		// For front lift.
-	  public final static ValveDA		rearClimbValve = new ValveDA(4);		// For rear lift.
+	  public final static ValveDA		rearClimbValve = new ValveDA(6);	//(4);		// For rear lift.
 	  public final static ValveDA		pickupValve = new ValveDA(1,0);			// For pickup arm.
-	  public final static ValveDA		hatchReleaseValve = new ValveDA(6);
+	  public final static ValveDA		hatchReleaseValve = new ValveDA(4);	//(6);
 	  //public final static ValveSA		hatchReleaseValve = new ValveSA(1, 2);	// release hatch.
 	  
 	  public final static AnalogInput	pressureSensor = new AnalogInput(0);
@@ -176,7 +176,9 @@ public class Devices
 		  else
 			  winchEncoder.setReverseDirection(true);
 			  
-		  hatchEncoder.setReverseDirection(false);
+		  //hatchEncoder.setReverseDirection(false);
+		  
+		  hatchWinch.setInverted(true);
 		  
 		  leftWinch.setNeutralMode(NeutralMode.Brake);
 		  rightWinch.setNeutralMode(NeutralMode.Brake);
@@ -190,7 +192,7 @@ public class Devices
 	     winchDrive = new SpeedControllerGroup(leftWinch, rightWinch);	     
 	     
 	     //unusedValve.solenoidSlideTime = .10;
-	     hatchReleaseValve.solenoidSlideTime = .10;
+	     hatchReleaseValve.solenoidSlideTime = .25;
 	     highLowValve.solenoidSlideTime = .10;
    		 rearClimbValve.solenoidSlideTime = .10;
    		 pickupValve.solenoidSlideTime = .10;

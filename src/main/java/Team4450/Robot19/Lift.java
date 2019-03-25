@@ -1,5 +1,7 @@
 package Team4450.Robot19;
 
+import Team4450.Lib.PIDOutputShim;
+import Team4450.Lib.PIDSourceShim;
 import Team4450.Lib.Util;
 import Team4450.Robot19.Devices;
 import edu.wpi.first.wpilibj.PIDController;
@@ -11,6 +13,8 @@ public class Lift
 	private boolean				holdingPosition = false, holdingHeight = false, holdingHatchHeight = false;
 	private boolean				hatchReleased = false, hatchMidPosition = false;
 	private final PIDController	liftPidController, hatchPidController;
+	private final PIDSourceShim	sourceShim;
+	private final PIDOutputShim	outputShim;
 
 	// This variable used to make this class is a singleton.
 	
@@ -34,8 +38,14 @@ public class Lift
 	{
 		this.robot = robot;
 		
-		liftPidController = new PIDController(0.0, 0.0, 0.0, Devices.winchEncoder, Devices.winchDrive);
+		sourceShim = new PIDSourceShim(Devices.winchEncoder);
+		outputShim = new PIDOutputShim(Devices.winchDrive);
 		
+		//liftPidController = new PIDController(0.0, 0.0, 0.0, Devices.winchEncoder, Devices.winchDrive);
+		liftPidController = new PIDController(0.0, 0.0, 0.0, sourceShim, outputShim);
+
+		sourceShim.setPidController(liftPidController);
+
 		hatchPidController = new PIDController(0.0, 0.0, 0.0, Devices.hatchEncoder, Devices.hatchWinch);
 		
 		Devices.winchEncoder.reset();
@@ -72,7 +82,7 @@ public class Lift
 		SmartDashboard.putBoolean("LiftHoldingHeight", holdingHeight);
 		SmartDashboard.putBoolean("LiftHoldingPosition", holdingPosition);
 		SmartDashboard.putBoolean("HatchHoldingHeight", holdingHatchHeight);
-		SmartDashboard.putBoolean("HatchReleased", hatchReleased);
+		SmartDashboard.putBoolean("HatchExtended", !hatchReleased);
 	}
 	
 	// Set lift winch motors to arbitrary power with top and bottom detection.
@@ -132,13 +142,15 @@ public class Lift
 			// p,i,d values are a guess. p is based on 750 range * .0002 = .15 max power.
 			// i,d values start at 0 and are adjusted to reduce overshoot and speed to 
 			// reach steady state.
-			// f value is the base motor power to apply to move to encoder target count.
+			// f value is the base motor power to apply in addition to the proportional error
+			// (power) to move to encoder target count. f is essentially power that should be
+			// present when error is zero. Non-zero error adds to that.
 			// Setpoint is the target encoder count.
 			// The idea is that the difference between the current encoder count and the
 			// target count will apply power to bring the two counts together and stay there.
-			liftPidController.setPID(0.0002, 0.00005, 0.0003, 0.0);
+			liftPidController.setPID(0.002, 0.00005, 0.0003, 0.0);
 			//liftPidController.setPID(0.0003, 0.0, 0.0, 0.0);
-			liftPidController.setOutputRange(-1, 1);
+			liftPidController.setOutputRange(-1.0, 1.0);
 			liftPidController.setSetpoint(count);
 			liftPidController.setPercentTolerance(1);	// % error.
 			liftPidController.enable();
@@ -179,7 +191,7 @@ public class Lift
 			// The idea is that any encoder motion will alter motor base speed to hold position.
 			liftPidController.setPID(0.0002, 0.00005, 0.0003, speed);
 			liftPidController.setSetpoint(Devices.winchEncoder.get());
-			liftPidController.setOutputRange(-1, 1);
+			liftPidController.setOutputRange(-1.0, 1.0);
 			liftPidController.setPercentTolerance(1);	// % error.
 			liftPidController.enable();
 			holdingPosition = true;
@@ -221,7 +233,7 @@ public class Lift
 			// target count will apply power to bring the two counts together and stay there.
 			hatchPidController.setPID(0.00003, 0.00001, 0.0003, 0.0);
 			//liftPidController.setPID(0.0003, 0.0, 0.0, 0.0);
-			hatchPidController.setOutputRange(-1, 1);
+			hatchPidController.setOutputRange(-.30, .10);
 			hatchPidController.setSetpoint(count);
 			hatchPidController.setPercentTolerance(1);	// % error.
 			hatchPidController.enable();

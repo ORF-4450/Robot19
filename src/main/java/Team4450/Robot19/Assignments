@@ -123,4 +123,5 @@ AirPressure				Number			Is set to the current air pressure in psi.
 Brakes					boolean			True when drive Talons are in brake mode.
 HDrive					boolean			True when H drive is active.
 AltDriveMode			boolean			True when alternate drive mode is enabled.
+HatchExtended			boolean			True when hatch grabber in the open/spread position.
 		  
