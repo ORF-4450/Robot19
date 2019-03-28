@@ -88,7 +88,7 @@ class Teleop
 		int		angle;
 
 		// Motor safety turned off during initialization.
-		Devices.robotDrive.setSafetyEnabled(false);
+		//Devices.robotDrive.setSafetyEnabled(false);
 
 		Util.consoleLog();
 
@@ -101,7 +101,7 @@ class Teleop
 
 		// Configure LaunchPad and Joystick event handlers.
 
-		launchPad = new LaunchPad(Devices.launchPad, this);
+		launchPad = new LaunchPad(Devices.launchPad);
 //		launchPad = new LaunchPad(Devices.launchPad, LaunchPadControlIDs.BUTTON_RED, this);
 //
 //		LaunchPadControl lpControl = launchPad.AddControl(LaunchPadControlIDs.ROCKER_LEFT_BACK);
@@ -122,13 +122,13 @@ class Teleop
 		launchPad.addLaunchPadEventListener(new LaunchPadListener());
 //		launchPad.Start();
 
-		leftStick = new JoyStick(Devices.leftStick, "LeftStick", JoyStickButtonIDs.TRIGGER, this);
+		leftStick = new JoyStick(Devices.leftStick, "LeftStick", JoyStickButtonIDs.TRIGGER);
 		//Example on how to track button:
 		leftStick.AddButton(JoyStickButtonIDs.TOP_BACK);
 		leftStick.addJoyStickEventListener(new LeftStickListener());
 		leftStick.Start();
 
-		rightStick = new JoyStick(Devices.rightStick, "RightStick", JoyStickButtonIDs.TRIGGER, this);
+		rightStick = new JoyStick(Devices.rightStick, "RightStick", JoyStickButtonIDs.TRIGGER);
 		//Example on how to track button:
 		rightStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
 		rightStick.addJoyStickEventListener(new RightStickListener());
@@ -137,8 +137,8 @@ class Teleop
 		// Invert for h drive correct direction.
 		//rightStick.invertX(true);
 
-		utilityStick = new JoyStick(Devices.utilityStick, "UtilityStick", this);
-//		utilityStick = new JoyStick(Devices.utilityStick, "UtilityStick", JoyStickButtonIDs.TRIGGER, this);
+		utilityStick = new JoyStick(Devices.utilityStick, "UtilityStick");
+//		utilityStick = new JoyStick(Devices.utilityStick, "UtilityStick", JoyStickButtonIDs.TRIGGER);
 //		//Example on how to track button:
 //		utilityStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
 //		utilityStick.AddButton(JoyStickButtonIDs.TOP_LEFT);
@@ -277,7 +277,7 @@ class Teleop
 					//Devices.robotDrive.curvatureDrive(rightY, rightX, rightStick.GetLatchedState(JoyStickButtonIDs.TRIGGER));
 			}
 
-			if (firsttime) Util.consoleLog("after tank drive");
+			if (firsttime) Util.consoleLog("after first loop");
 			
 			firsttime = false;
 			
@@ -318,15 +318,6 @@ class Teleop
 		Util.consoleLog("end");
 	}
 
-//	// This method scales the input values less than 1.0 down but on a sliding scale
-//	// so that 1.0 input returns 1.0 output. This is what is in the DifferentialDrive.tankDrive
-//	// method that scales input to reduce sensitivity.
-//	
-//	private double squareInput(double input)
-//	{
-//		return Math.copySign(input * input, input);	
-//	}
-	
 	private boolean isLeftRightEqual(double left, double right, double percent)
 	{
 		if (Math.abs(left - right) <= (1 * (percent / 100))) return true;

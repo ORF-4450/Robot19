@@ -9,12 +9,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Lift 
 {
-	private Robot robot;
+	private Robot 				robot;
 	private boolean				holdingPosition = false, holdingHeight = false, holdingHatchHeight = false;
 	private boolean				hatchReleased = false, hatchMidPosition = false;
 	private final PIDController	liftPidController, hatchPidController;
-	private final PIDSourceShim	sourceShim;
-	private final PIDOutputShim	outputShim;
+	//private final PIDSourceShim	sourceShim;
+	//private final PIDOutputShim	outputShim;
 
 	// This variable used to make this class is a singleton.
 	
@@ -38,13 +38,14 @@ public class Lift
 	{
 		this.robot = robot;
 		
-		sourceShim = new PIDSourceShim(Devices.winchEncoder);
-		outputShim = new PIDOutputShim(Devices.winchDrive);
+		//sourceShim = new PIDSourceShim(Devices.winchEncoder);
+		//outputShim = new PIDOutputShim(Devices.winchDrive);
 		
-		//liftPidController = new PIDController(0.0, 0.0, 0.0, Devices.winchEncoder, Devices.winchDrive);
-		liftPidController = new PIDController(0.0, 0.0, 0.0, sourceShim, outputShim);
+		liftPidController = new PIDController(0.0, 0.0, 0.0, Devices.winchEncoder, Devices.winchDrive);
+		//liftPidController = new PIDController(0.0, 0.0, 0.0, sourceShim, outputShim);
 
-		sourceShim.setPidController(liftPidController);
+		//sourceShim.setPidController(liftPidController);
+		//outputShim.setPidController(liftPidController);
 
 		hatchPidController = new PIDController(0.0, 0.0, 0.0, Devices.hatchEncoder, Devices.hatchWinch);
 		
@@ -127,7 +128,6 @@ public class Lift
 			Devices.winchDrive.set(power);
 	}
 	
-	// 380 cargo ship  749 rocket lv2  1349 rocket lv3
 	// Automatically move lift to specified encoder count and hold it there.
 	// count < 0 turns pid controller off.
 	
@@ -148,18 +148,21 @@ public class Lift
 			// Setpoint is the target encoder count.
 			// The idea is that the difference between the current encoder count and the
 			// target count will apply power to bring the two counts together and stay there.
-			liftPidController.setPID(0.002, 0.00005, 0.0003, 0.0);
-			//liftPidController.setPID(0.0003, 0.0, 0.0, 0.0);
+			liftPidController.setPID(0.001, 0.00004, 0.000, 0.0);
 			liftPidController.setOutputRange(-1.0, 1.0);
 			liftPidController.setSetpoint(count);
+			liftPidController.setInputRange(0, count + 100);
 			liftPidController.setPercentTolerance(1);	// % error.
+			Util.consoleLog("at enable");
 			liftPidController.enable();
 			holdingHeight = true;
+			Util.consoleLog("pid active");
 		}
 		else
 		{
 			liftPidController.disable();
 			holdingHeight = false;
+			Util.consoleLog("pid disabled");
 		}
 		
 		updateDS();
@@ -189,7 +192,8 @@ public class Lift
 			// f value is the base motor speed, which is where (power) we want to hold position.
 			// Setpoint is current encoder count.
 			// The idea is that any encoder motion will alter motor base speed to hold position.
-			liftPidController.setPID(0.0002, 0.00005, 0.0003, speed);
+			//liftPidController.setPID(0.0002, 0.00005, 0.0003, speed);
+			liftPidController.setPID(0.0002, 0.0, 0.0, speed);
 			liftPidController.setSetpoint(Devices.winchEncoder.get());
 			liftPidController.setOutputRange(-1.0, 1.0);
 			liftPidController.setPercentTolerance(1);	// % error.
@@ -231,8 +235,8 @@ public class Lift
 			// Setpoint is the target encoder count.
 			// The idea is that the difference between the current encoder count and the
 			// target count will apply power to bring the two counts together and stay there.
-			hatchPidController.setPID(0.00003, 0.00001, 0.0003, 0.0);
-			//liftPidController.setPID(0.0003, 0.0, 0.0, 0.0);
+			//hatchPidController.setPID(0.00003, 0.00001, 0.0003, 0.0);
+			hatchPidController.setPID(0.0003, 0.0, 0.0, 0.0);
 			hatchPidController.setOutputRange(-.30, .10);
 			hatchPidController.setSetpoint(count);
 			hatchPidController.setPercentTolerance(1);	// % error.

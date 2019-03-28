@@ -161,7 +161,7 @@ public class Autonomous
 		Devices.SetCANTalonRampRate(1.0);
 		
 		// Create LaunchPad to allow use of red button to abort auto program.
-		launchPad = new LaunchPad(Devices.launchPad, LaunchPadControlIDs.BUTTON_RED, this);
+		launchPad = new LaunchPad(Devices.launchPad, LaunchPadControlIDs.BUTTON_RED);
 		launchPad.Start();
 
 		// Determine which auto program to run as indicated by driver station.
