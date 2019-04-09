@@ -19,7 +19,6 @@ public class Autonomous
 	private final Robot			robot;
 	private AutoProgram			program = AutoProgram.TeleOp;
 	private final GearBox		gearBox;
-	private LaunchPad			launchPad;
 	private Lift				lift;
 	private boolean				abortAutonomous = false;
 	
@@ -64,7 +63,6 @@ public class Autonomous
 		Util.consoleLog();
 		
 		if (gearBox != null) gearBox.dispose();
-		if (launchPad != null) launchPad.dispose();
 		
 		// Not disposing of lift because we want lift position to carry over to teleop.
 		
@@ -73,7 +71,7 @@ public class Autonomous
 	
 	private boolean isAutoActive()
 	{
-		if (launchPad.GetCurrentState(LaunchPadControlIDs.BUTTON_RED)) abortAutonomous = true;
+		if (Devices.launchPad.GetCurrentState(LaunchPadControlIDs.BUTTON_RED)) abortAutonomous = true;
 		
 		return robot.isEnabled() && robot.isAutonomous() && !abortAutonomous;
 	}
@@ -160,10 +158,6 @@ public class Autonomous
 		// Set Talon ramp rate for smooth acceleration from stop. Determine by observation.
 		Devices.SetCANTalonRampRate(1.0);
 		
-		// Create LaunchPad to allow use of red button to abort auto program.
-		launchPad = new LaunchPad(Devices.launchPad, LaunchPadControlIDs.BUTTON_RED);
-		launchPad.Start();
-
 		// Determine which auto program to run as indicated by driver station.
 		switch (program)
 		{
@@ -256,10 +250,6 @@ public class Autonomous
 	{
 		Util.consoleLog();
 		
-		if (launchPad != null) launchPad.dispose();
-		
-		launchPad = null;
-
 		robot.operatorControl();
 	}
 

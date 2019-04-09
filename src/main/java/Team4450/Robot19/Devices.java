@@ -7,12 +7,15 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import Team4450.Lib.JoyStick;
+import Team4450.Lib.LaunchPad;
 import Team4450.Lib.NavX;
 import Team4450.Lib.SRXMagneticEncoderRelative;
 import Team4450.Lib.SRXMagneticEncoderRelative.PIDRateType;
 import Team4450.Lib.Util;
 import Team4450.Lib.ValveDA;
 import Team4450.Lib.ValveSA;
+import Team4450.Lib.JoyStick.JoyStickButtonIDs;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Counter;
@@ -45,10 +48,10 @@ public class Devices
 	  public static	SpeedControllerGroup 	hDrive;
 	  public static SpeedControllerGroup	winchDrive;
 	  
-	  public final static Joystick      utilityStick = new Joystick(2);	
-	  public final static Joystick      leftStick = new Joystick(0);	
-	  public final static Joystick		rightStick = new Joystick(1);	
-	  public final static Joystick		launchPad = new Joystick(3);
+	  public static JoyStick			rightStick = null;
+	  public static JoyStick			leftStick = null;
+	  public static JoyStick			utilityStick = null;
+	  public static LaunchPad			launchPad = null;
 
 	  public final static Compressor	compressor = new Compressor(0);		// Compressor class represents the PCM.
 
@@ -94,6 +97,7 @@ public class Devices
 	  {
 		  Util.consoleLog();
 
+		  // Create the drive Talons.
 		  LFCanTalon = new WPI_TalonSRX(1);
 		  LRCanTalon = new WPI_TalonSRX(2);
 		  RFCanTalon = new WPI_TalonSRX(3);	
@@ -151,6 +155,7 @@ public class Devices
 		  rightEncoder.setPIDSourceType(PIDSourceType.kRate);
 		  rightEncoder.setPIDRateType(PIDRateType.RPM);
 		  
+		  // Create Spark controllers for H drive.
 		  leftSpark = new CANSparkMax(5, MotorType.kBrushless);
 		  rightSpark = new CANSparkMax(6, MotorType.kBrushless);
 		  
@@ -165,6 +170,7 @@ public class Devices
 	      
 	      hDrive.setInverted(true);
 	      
+	      // Create the Victor controllers.
 		  leftWinch = new WPI_VictorSPX(7);
 		  rightWinch = new WPI_VictorSPX(8);
 		  pickupMotor = new WPI_VictorSPX(9);
@@ -189,13 +195,33 @@ public class Devices
 		  ballSpit.setNeutralMode(NeutralMode.Brake);
 
 		  // Setup a SpeedControllerGroup for the left and right winch drive motors.
-	     winchDrive = new SpeedControllerGroup(leftWinch, rightWinch);	     
+	      winchDrive = new SpeedControllerGroup(leftWinch, rightWinch);	     
 	     
-	     //unusedValve.solenoidSlideTime = .10;
-	     hatchReleaseValve.solenoidSlideTime = .25;
-	     highLowValve.solenoidSlideTime = .10;
-   		 rearClimbValve.solenoidSlideTime = .10;
-   		 pickupValve.solenoidSlideTime = .10;
+	      // Increase valve slide time for valve solenoids as for some reason the valves on the
+	      // 2019 comp robot stick.
+	      //unusedValve.solenoidSlideTime = .10;
+	      hatchReleaseValve.solenoidSlideTime = .25;
+	      highLowValve.solenoidSlideTime = .10;
+   		  rearClimbValve.solenoidSlideTime = .10;
+   		  pickupValve.solenoidSlideTime = .10;
+   		 
+   		  // Create launch pad with all buttons monitored and auto start of monitoring loop.
+   		  // Will add event handler in Teleop class.
+ 		  launchPad = new LaunchPad(new Joystick(3));
+
+ 		  // Create our JoyStick classes for each JS with selective button monitoring. Must start monitoring
+ 		  // loop manually when not adding all buttons. Will add event handler in Teleop class.
+ 		  leftStick = new JoyStick(new Joystick(0), "LeftStick", JoyStickButtonIDs.TRIGGER);
+ 		  //Example on how to track an additional button:
+ 		  leftStick.AddButton(JoyStickButtonIDs.TOP_BACK);
+ 		  leftStick.Start();
+
+ 		  rightStick = new JoyStick(new Joystick(1), "RightStick", JoyStickButtonIDs.TRIGGER);
+ 		  rightStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
+ 		  rightStick.Start();
+
+ 		  // Create utility stick with all buttons monitored and auto start.
+ 		  utilityStick = new JoyStick(new Joystick(2), "UtilityStick");
 	  }
 
 	  // Initialize and Log status indication from CANTalon. If we see an exception
