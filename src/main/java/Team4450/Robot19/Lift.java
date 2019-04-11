@@ -48,7 +48,14 @@ public class Lift
 		//outputShim.setPidController(liftPidController);
 
 		hatchPidController = new PIDController(0.0, 0.0, 0.0, Devices.hatchEncoder, Devices.hatchWinch);
+
+		//initialize();
 		
+		Util.consoleLog("Lift created!");
+	}
+	
+	public void initialize()
+	{
 		Devices.winchEncoder.reset();
 		Devices.hatchEncoder.reset();
 		
@@ -56,8 +63,6 @@ public class Lift
 		grabHatch();
 				
 		updateDS();
-		
-		Util.consoleLog("Lift created!");
 	}
 	
 	/**

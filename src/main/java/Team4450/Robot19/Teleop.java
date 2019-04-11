@@ -15,11 +15,6 @@ class Teleop
 {
 	private final Robot 		robot;
 	private boolean				autoTarget, altDriveMode;
-	private Vision				vision;
-	private GearBox				gearBox;
-	private Lift				lift;
-	private Pickup				pickup;
-	private Climber				climber;
 	
 	// This variable used to make this class is a singleton.
 	
@@ -35,16 +30,6 @@ class Teleop
 		//Devices.robotDrive.setSafetyEnabled(false);
 
 		this.robot = robot;
-
-		gearBox = GearBox.getInstance(robot);
-		
-		vision = Vision.getInstance(robot);
-		
-		lift = Lift.getInstance(robot);
-		
-		pickup = Pickup.getInstance(robot);
-		
-		climber = Climber.getInstance(robot);
 	}
 	
 	/**
@@ -65,11 +50,6 @@ class Teleop
 	void dispose()
 	{
 		Util.consoleLog();
-
-		if (gearBox != null) gearBox.dispose();
-		if (lift != null) lift.dispose();
-		if (pickup != null) pickup.dispose();
-		if (climber != null) climber.dispose();
 
 		Devices.launchPad.removeAllLaunchPadEventListeners();
 		Devices.leftStick.removeAllJoyStickEventListeners();
@@ -126,12 +106,18 @@ class Teleop
 		Devices.leftEncoder.resetMaxRate();
 		Devices.rightEncoder.resetMaxRate();
 		
+		Devices.gearBox.lowSpeed();
+		Devices.climber.initialize();
+		Devices.pickup.initialize();
+		Devices.lift.initialize();
+		
 		// Motor safety turned on.
 		Devices.robotDrive.setSafetyEnabled(true);
 
 		// Driving loop runs until teleop is over.
 
 		Util.consoleLog("enter driving loop");
+
 		boolean firsttime = true;
 		
 		while (robot.isEnabled())	// && robot.isOperatorControl())
@@ -248,7 +234,7 @@ class Teleop
 //			{
 //				lift.setHatchPower(0);
 
-			lift.setWinchPower(Util.squareInput(utilY));
+			Devices.lift.setWinchPower(Util.squareInput(utilY));
 
 //			}
 			
@@ -267,9 +253,6 @@ class Teleop
 
 		// End of teleop mode.
 
-		// ensure we start next time in low gear.
-		gearBox.lowSpeed();
-		
 		Util.consoleLog("end");
 	}
 
@@ -322,9 +305,9 @@ class Teleop
 //		    			gearBox.lowSpeed();
 		
 					if (control.latchedState)
-						lift.setHatchHeight(-100);
+						Devices.lift.setHatchHeight(-100);
 					else
-						lift.setHatchHeight(-200);
+						Devices.lift.setHatchHeight(-200);
 					
 					break;
 					
@@ -335,52 +318,52 @@ class Teleop
 					
 				case BUTTON_BLUE:
 					Util.consoleLog("blue");
-					if (climber.isFrontExtended())
-						climber.retractFrontClimb(true);	// Remove overrides after testing.
+					if (Devices.climber.isFrontExtended())
+						Devices.climber.retractFrontClimb(true);	// Remove overrides after testing.
 					else
-						climber.extendFrontClimb(true);
+						Devices.climber.extendFrontClimb(true);
 					
 					break;
 					
 				case BUTTON_BLACK:
-					if (climber.isRearExtended())
-						climber.retractRearClimb();
+					if (Devices.climber.isRearExtended())
+						Devices.climber.retractRearClimb();
 					else
-						climber.extendRearClimb(true);
+						Devices.climber.extendRearClimb(true);
 					
 					break;
 					
 				case BUTTON_BLUE_RIGHT:
 					//lift.setHeight(1000);
-					if (pickup.isExtended())
-						pickup.retract();
+					if (Devices.pickup.isExtended())
+						Devices.pickup.retract();
 					else
-						pickup.extend();
+						Devices.pickup.extend();
 					
 					break;
 					
 				case BUTTON_RED_RIGHT:
-					if (lift.isHoldingHeight())
-						lift.setHeight(-1);
+					if (Devices.lift.isHoldingHeight())
+						Devices.lift.setHeight(-1);
 					else
 					{
 						if (robot.isComp)
-							lift.setHeight(1250);
+							Devices.lift.setHeight(1250);
 						else
-							lift.setHeight(1400);
+							Devices.lift.setHeight(1400);
 					}
 					
 					break;
 					
 				case BUTTON_YELLOW:
-					if (lift.isHoldingHeight())
-						lift.setHeight(-1);
+					if (Devices.lift.isHoldingHeight())
+						Devices.lift.setHeight(-1);
 					else
 					{
 						if (robot.isComp)
-							lift.setHeight(850);
+							Devices.lift.setHeight(850);
 						else
-							lift.setHeight(724);
+							Devices.lift.setHeight(724);
 					}
 					
 					break;
@@ -451,10 +434,10 @@ class Teleop
 			 */
 				
 				case TOP_MIDDLE:
-					if (lift.isHoldingHeight())
-						lift.setHeight(-1);
+					if (Devices.lift.isHoldingHeight())
+						Devices.lift.setHeight(-1);
 					else
-						lift.setHeight(400);
+						Devices.lift.setHeight(400);
 					
 				default:
 					break;
@@ -480,10 +463,10 @@ class Teleop
 			switch(button.id)
 			{
 				case TRIGGER:
-					if (gearBox.isLowSpeed())
-	    				gearBox.highSpeed();
+					if (Devices.gearBox.isLowSpeed())
+	    				Devices.gearBox.highSpeed();
 	    			else
-	    				gearBox.lowSpeed();
+	    				Devices.gearBox.lowSpeed();
 
 					break;
 					
@@ -524,23 +507,23 @@ class Teleop
 //					break;
 					
 				case TOP_LEFT:
-					pickup.intakeBall();
+					Devices.pickup.intakeBall();
 					break;
 					
 				case TOP_RIGHT:
-					pickup.spitBall();
+					Devices.pickup.spitBall();
 					break;
 					
 				case TOP_MIDDLE:
-					if (pickup.isAutoIntakeRunning())
-						pickup.stopAutoIntake();
+					if (Devices.pickup.isAutoIntakeRunning())
+						Devices.pickup.stopAutoIntake();
 					else
-						pickup.startAutoIntake();
+						Devices.pickup.startAutoIntake();
 					
 					break;
 				
 				case TOP_BACK:
-					lift.setHatchHeightAuto();
+					Devices.lift.setHatchHeightAuto();
 					break;
 					
 				default:

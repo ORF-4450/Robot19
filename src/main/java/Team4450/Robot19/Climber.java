@@ -34,11 +34,16 @@ public class Climber
 		
 		this.robot = robot;
 		
+		//initialize();
+		
+		Util.consoleLog("Pickup created!");
+	}
+	
+	public void initialize()
+	{
 		retractFrontClimb(true);
 		
 		retractRearClimb();
-		
-		Util.consoleLog("Pickup created!");
 	}
 	
 	/**

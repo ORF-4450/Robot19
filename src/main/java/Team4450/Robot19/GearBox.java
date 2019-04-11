@@ -23,7 +23,7 @@ public class GearBox
 		
 		this.robot = robot;
 		
-		lowSpeed();
+		//lowSpeed();
 		
 		Util.consoleLog("GearBox created!");
 	}

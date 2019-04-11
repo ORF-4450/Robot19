@@ -37,9 +37,14 @@ public class Pickup
 		
 		this.robot = robot;
 		
-		retract();
+		//retract();
 		
 		Util.consoleLog("Pickup created!");
+	}
+	
+	public void initialize()
+	{
+		retract();
 	}
 	
 	/**

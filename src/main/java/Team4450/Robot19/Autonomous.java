@@ -18,7 +18,6 @@ public class Autonomous
 {
 	private final Robot			robot;
 	private AutoProgram			program = AutoProgram.TeleOp;
-	private final GearBox		gearBox;
 	private Lift				lift;
 	private boolean				abortAutonomous = false;
 	
@@ -35,8 +34,6 @@ public class Autonomous
 		Util.consoleLog();
 		
 		this.robot = robot;
-		
-		gearBox = GearBox.getInstance(robot);
 		
 		lift = Lift.getInstance(robot);
 		
@@ -61,8 +58,6 @@ public class Autonomous
 	public void dispose()
 	{
 		Util.consoleLog();
-		
-		if (gearBox != null) gearBox.dispose();
 		
 		// Not disposing of lift because we want lift position to carry over to teleop.
 		

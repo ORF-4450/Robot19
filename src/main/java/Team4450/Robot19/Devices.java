@@ -87,6 +87,12 @@ public class Devices
 	  
 	  private static boolean			talonBrakeMode;
 	  
+	  public static GearBox				gearBox;
+	  public static Vision				vision;
+	  public static Climber				climber;
+	  public static Pickup				pickup;
+	  public static Lift				lift;
+	  
 	  // Private constructor prevents creation of any instances of this "static" class.
 	  
 	  private Devices() {}
@@ -222,6 +228,16 @@ public class Devices
 
  		  // Create utility stick with all buttons monitored and auto start.
  		  utilityStick = new JoyStick(new Joystick(2), "UtilityStick");
+ 		  
+ 		  gearBox = GearBox.getInstance(robot);
+ 		  
+ 		  vision = Vision.getInstance(robot);
+ 		  
+ 		  climber = Climber.getInstance(robot);
+ 		  
+ 		  lift = Lift.getInstance(robot);
+ 		  
+ 		  pickup = Pickup.getInstance(robot);
 	  }
 
 	  // Initialize and Log status indication from CANTalon. If we see an exception
