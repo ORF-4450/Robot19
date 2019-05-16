@@ -95,6 +95,7 @@ def hash = { ->
 // knows where to look for our Robot Class. Add version information to jar manifest.
 jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
         
     manifest {

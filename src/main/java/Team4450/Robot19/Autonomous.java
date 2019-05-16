@@ -329,14 +329,15 @@ public class Autonomous
 		   // The 1/80 scales the turn factor to be 1 (100%) at 80 degrees of error. We then tone
 		   // that down with the .8 reduction. These numbers from Jaci's examples and seems to work.
 		   
-		   double turn = 0.8 * (1.0 / 80.0) * angleDifference;
+		   //double turn = 0.8 * (1.0 / 80.0) * angleDifference;
+		   double turn = 0.05 * angleDifference;
 
 		   leftSpeed = Util.clampValue(leftSpeed + turn, 1);
 		   rightSpeed = Util.clampValue(rightSpeed - turn, 1);
 
-		   Util.consoleLog("le=%.4f lp=%.2f  re==%.4f rp=%.2f  dhdg=%.0f  hdg=%.0f ad=%.2f  turn=%.5f  time=%.3f totalelaspedtime = %.3f segmentTime = %.3f totalSegmentTime = %.3f", 
+		   Util.consoleLog("le=%.4f lp=%.2f  re=%.4f rp=%.2f  dhdg=%.2f  hdg=%.2f ad=%.2f  turn=%.5f  time=%.3f totalelaspedtime = %.3f segmentTime = %.3f totalSegmentTime = %.3f", 
 						   Util.inchesToMeters(Devices.leftEncoder.getDistance()), leftSpeed, Util.inchesToMeters(Devices.rightEncoder.getDistance()), rightSpeed, 
-						   segment_heading, gyro_heading, angleDifference, turn,  elapsedTime, totalTime, elapsedSegmentTime, totalSegmentTime);
+						   segment_heading, gyro_heading, angleDifference, turn, elapsedTime, totalTime, elapsedSegmentTime, totalSegmentTime);
 
 		   Devices.robotDrive.tankDrive(leftSpeed, rightSpeed);
 		   
@@ -646,7 +647,7 @@ public class Autonomous
 	/**
 	 * Automatically drive in a curve.
 	 * @param power Speed to drive, + is forward.
-	 * @param curve Speed of rotation 0..1.0, always +.
+	 * @param curve Speed of rotation 0..1..0, always +.
 	 * @param target Target angle to turn. If not using heading, this is 0..180, - left, + right. If using heading
 	 * this is the target heading 0..359.
 	 * @param stop Stop stops motors at end of curve, dontStop leaves power on to flow into next move.

@@ -3,9 +3,14 @@ package Team4450.Robot19;
 
 import java.lang.Math;
 
+import org.opencv.core.Rect;
+
 import Team4450.Lib.*;
 import Team4450.Lib.JoyStick.*;
 import Team4450.Lib.LaunchPad.*;
+import Team4450.Lib.NavX.NavXEvent;
+import Team4450.Lib.NavX.NavXEventListener;
+import Team4450.Lib.NavX.NavXEventType;
 import Team4450.Robot19.Devices;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -67,7 +72,6 @@ class Teleop
 		int		angle;
 
 		// Motor safety turned off during initialization.
-		//Devices.robotDrive.setSafetyEnabled(false);
 
 		Util.consoleLog();
 
@@ -87,7 +91,14 @@ class Teleop
 		Devices.rightStick.addJoyStickEventListener(new RightStickListener());
 		
 		Devices.utilityStick.addJoyStickEventListener(new UtilityStickListener());
-
+		
+		// Configure NavX collision detection.
+		
+		Devices.navx.setNavXEventListener(new NavXListener());
+		Devices.navx.setEventMonitoringInterval(.050);
+   		Devices.navx.setCollisionThreshold(1.0);
+   		Devices.navx.enableEventMonitoring(true);
+   		
 		// Invert driving joy sticks Y axis so + values mean forward.
 		Devices.leftStick.invertY(true);
 		Devices.rightStick.invertY(true);
@@ -245,7 +256,7 @@ class Teleop
 			// Cause smartdashboard to update any registered Sendables, including Gyro2.
 			
 			SmartDashboard.updateValues();
-
+			
 			// End of driving loop.
 
 			Timer.delay(.020);	// wait 20ms for update from driver station.
@@ -475,6 +486,35 @@ class Teleop
 					SmartDashboard.putBoolean("AltDriveMode", altDriveMode);
 					break;
 					
+				case TOP_MIDDLE:
+					robot.cameraThread.addTargetRectangle(null);
+					robot.cameraThread.setContours(null);
+
+					robot.vision.processImage(robot.cameraThread.getCurrentImage());
+					
+					if (robot.vision.targetVisible())
+					{
+						robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(0));
+						robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(1));
+						robot.cameraThread.setContours(robot.vision.getContours());
+						
+						int centerx = robot.vision.centerX();
+						int centery = robot.vision.centerY();
+						int offsetx = robot.vision.offsetX();
+						int offsety = robot.vision.offsetY();
+						
+						Util.consoleLog("centerx=%d offx=%d  centery=%d offy=%d  dist=%.1f", centerx, offsetx, centery, 
+										offsety, robot.vision.getDistance());
+						
+						robot.cameraThread.addTargetRectangle(new Rect(centerx-5,centery-5,10,10));
+					}
+					
+					break;
+					
+				case TOP_RIGHT:
+					driveToTarget();
+					break;
+
 				default:
 					break;
 			}
@@ -535,5 +575,61 @@ class Teleop
 		{
 			//Util.consoleLog("%s", joyStickEvent.button.id.name());
 		}
+	}
+	
+	// Handle NavX events.
+
+	private class NavXListener implements NavXEventListener 
+	{
+		public void event( NavXEvent navXEvent )
+		{
+			if ( navXEvent.eventType == NavXEventType.collisionDetected)
+				Util.consoleLog("collision detected = %3f", navXEvent.eventData);
+		}
+	}
+	
+	private void  driveToTarget()
+	{
+		Util.consoleLog();
+
+		robot.vision.processImage(robot.cameraThread.getCurrentImage());
+		
+		// Drive toward target until distance (pixels between target centers = 70).
+		
+		while (robot.isEnabled() && robot.vision.targetVisible() && robot.vision.getDistance() < 70)
+		{
+			robot.cameraThread.addTargetRectangle(null);
+			robot.cameraThread.setContours(null);
+			
+			robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(0));
+			robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(1));
+			robot.cameraThread.setContours(robot.vision.getContours());
+			
+			int centerx = robot.vision.centerX();
+			int centery = robot.vision.centerY();
+			int offsetx = robot.vision.offsetX();
+			int offsety = robot.vision.offsetY();
+			
+			Util.consoleLog("centerx=%d offx=%d  centery=%d offy=%d  dist=%.1f", centerx, offsetx, centery, 
+							offsety, robot.vision.getDistance());
+			
+			robot.cameraThread.addTargetRectangle(new Rect(centerx-5,centery-5,10,10));
+
+			// Steer based on target center X axis offset from center of robot. + offset is right of center.
+			// We invert since a - value causes left turn which would correct the right of center
+			// robot heading. Adjust gain for reasonable correction effect, use distance to scale the
+			// correction. At distance we want small corrections, as we approach target corrections
+			// need to get larger. That would be 1/70. 
+			
+			Devices.robotDrive.curvatureDrive(.20, -offsety * .03, false);
+			
+			//Devices.robotDrive.curvatureDrive(.20, -offsety * .03 * (robot.vision.getDistance() * .015), false);
+
+			Timer.delay(.25);
+
+			robot.vision.processImage(robot.cameraThread.getCurrentImage());
+		}
+		
+		Util.consoleLog("end driveToTarget");
 	}
 }

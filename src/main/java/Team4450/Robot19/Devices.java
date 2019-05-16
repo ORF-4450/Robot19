@@ -220,6 +220,8 @@ public class Devices
  		  leftStick = new JoyStick(new Joystick(0), "LeftStick", JoyStickButtonIDs.TRIGGER);
  		  //Example on how to track an additional button:
  		  leftStick.AddButton(JoyStickButtonIDs.TOP_BACK);
+ 		  leftStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
+ 		  leftStick.AddButton(JoyStickButtonIDs.TOP_RIGHT);
  		  leftStick.Start();
 
  		  rightStick = new JoyStick(new Joystick(1), "RightStick", JoyStickButtonIDs.TRIGGER);

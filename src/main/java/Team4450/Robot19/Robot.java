@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 @SuppressWarnings("deprecation")
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC19-04.10.19-01";
+  static final String  	PROGRAM_NAME = "RAC19-05.14.19-01";
 
   public Properties		robotProperties;
   
@@ -170,7 +170,17 @@ public class Robot extends SampleRobot
        	// Configure autonomous program choices sendable chooser.
        	
        	Autonomous.setAutoChoices();
-
+   		
+   		Devices.navx.dumpValuesToNetworkTables();
+   		
+   		if (Devices.navx.isConnected())
+   			Util.consoleLog("NavX version=%s", Devices.navx.getAHRS().getFirmwareVersion());
+   		else
+   		{
+   			Exception e = new Exception("NavX is NOT connected!");
+   			Util.logException(e);
+   		}
+   		
        	lastRobotState = currentRobotState;
        	
    		Util.consoleLog("end");
