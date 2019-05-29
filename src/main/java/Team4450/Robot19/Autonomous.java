@@ -99,6 +99,7 @@ public class Autonomous
 		autoChooser.addOption("Right Cargo", AutoProgram.RocketRightCargo);
 		autoChooser.addOption("Left Cargo", AutoProgram.RocketLeftCargo);
 		autoChooser.addOption("PathFinder Test", AutoProgram.TestPathFinder);		
+		autoChooser.addOption("auto Test", AutoProgram.AutoTest);		
 				
 		SmartDashboard.putData(autoChooser);
 	}
@@ -203,6 +204,10 @@ public class Autonomous
 			case TestPathFinder:
 					//testPathfinder();
 				break;
+				
+			case AutoTest:
+				autoTest();
+				break;
 
 			default:
 				break;
@@ -236,7 +241,8 @@ public class Autonomous
 		RocketLeftFar,
 		RocketRightClose,
 		RocketRightMiddle,
-		RocketRightFar
+		RocketRightFar,
+		AutoTest
 	}
 
 	// Switch to teleop for "sand storm" operation.
@@ -246,6 +252,13 @@ public class Autonomous
 		Util.consoleLog();
 		
 		robot.operatorControl();
+	}
+	
+	private void autoTest()
+	{
+		Util.consoleLog();
+		
+		autoDrive(.50, 1000, StopMotors.stop, Brakes.on, Pid.on, Heading.angle);
 	}
 
 	// Creates left and right path file names from path name.

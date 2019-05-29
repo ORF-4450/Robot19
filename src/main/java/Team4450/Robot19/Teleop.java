@@ -511,7 +511,7 @@ class Teleop
 					
 					break;
 					
-				case TOP_RIGHT:
+				case TOP_LEFT:
 					driveToTarget();
 					break;
 
@@ -588,18 +588,26 @@ class Teleop
 		}
 	}
 	
-	private void  driveToTarget()
+	private void driveToTarget()
 	{
-		Util.consoleLog();
+		Util.consoleLog("--------------------------------------------------------");
 
-		robot.vision.processImage(robot.cameraThread.getCurrentImage());
+		autoTarget = true;
+		Devices.robotDrive.setSafetyEnabled(false);
+
+		//robot.vision.processImage(robot.cameraThread.getCurrentImage());
 		
-		// Drive toward target until distance (pixels between target centers = 70).
+		// Drive toward target until distance (pixels between target centers = 160).
 		
-		while (robot.isEnabled() && robot.vision.targetVisible() && robot.vision.getDistance() < 70)
+		//while (robot.isEnabled() && robot.vision.targetVisible() && robot.vision.getDistance() < 160)
+		do
 		{
 			robot.cameraThread.addTargetRectangle(null);
 			robot.cameraThread.setContours(null);
+
+			robot.vision.processImage(robot.cameraThread.getCurrentImage());
+			
+			if (!robot.vision.targetVisible()) break;
 			
 			robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(0));
 			robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(1));
@@ -610,26 +618,35 @@ class Teleop
 			int offsetx = robot.vision.offsetX();
 			int offsety = robot.vision.offsetY();
 			
-			Util.consoleLog("centerx=%d offx=%d  centery=%d offy=%d  dist=%.1f", centerx, offsetx, centery, 
-							offsety, robot.vision.getDistance());
+			double curve = offsetx * (1 / 100.0) * (robot.vision.getDistance() / 160);
+					
+			Util.consoleLog("centerx=%d offx=%d  centery=%d offy=%d  dist=%.1f  cur=%.3f", centerx, offsetx, centery, 
+							offsety, robot.vision.getDistance(), curve);
 			
-			robot.cameraThread.addTargetRectangle(new Rect(centerx-5,centery-5,10,10));
+			robot.cameraThread.addTargetRectangle(new Rect(centerx-5, centery-5, 10, 10));
 
-			// Steer based on target center X axis offset from center of robot. + offset is right of center.
+			// Steer based on center of robot field of vision offset from target center (X axis). 
+			// + offset is target right of center so we want to turn right. - offset is target left
+			// of center so we want to turn left.
 			// We invert since a - value causes left turn which would correct the right of center
 			// robot heading. Adjust gain for reasonable correction effect, use distance to scale the
 			// correction. At distance we want small corrections, as we approach target corrections
-			// need to get larger. That would be 1/70. 
+			// need to get larger. That would be 1/180. 
 			
-			Devices.robotDrive.curvatureDrive(.20, -offsety * .03, false);
-			
-			//Devices.robotDrive.curvatureDrive(.20, -offsety * .03 * (robot.vision.getDistance() * .015), false);
+			//Devices.robotDrive.curvatureDrive(.25, offsetx * .003, false);
+			//Devices.robotDrive.tankDrive(.30, .30);
+			Devices.robotDrive.curvatureDrive(.25, curve, false);
 
 			Timer.delay(.25);
 
-			robot.vision.processImage(robot.cameraThread.getCurrentImage());
-		}
+			//robot.vision.processImage(robot.cameraThread.getCurrentImage());
+		} while (robot.isEnabled() && robot.vision.getDistance() < 160);
 		
+		Devices.robotDrive.stopMotor();
+		
+		autoTarget = false;
+		Devices.robotDrive.setSafetyEnabled(true);
+
 		Util.consoleLog("end driveToTarget");
 	}
 }

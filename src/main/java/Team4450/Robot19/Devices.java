@@ -221,7 +221,7 @@ public class Devices
  		  //Example on how to track an additional button:
  		  leftStick.AddButton(JoyStickButtonIDs.TOP_BACK);
  		  leftStick.AddButton(JoyStickButtonIDs.TOP_MIDDLE);
- 		  leftStick.AddButton(JoyStickButtonIDs.TOP_RIGHT);
+ 		  leftStick.AddButton(JoyStickButtonIDs.TOP_LEFT);
  		  leftStick.Start();
 
  		  rightStick = new JoyStick(new Joystick(1), "RightStick", JoyStickButtonIDs.TRIGGER);
