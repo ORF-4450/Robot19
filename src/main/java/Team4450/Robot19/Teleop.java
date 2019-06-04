@@ -489,6 +489,7 @@ class Teleop
 				case TOP_MIDDLE:
 					robot.cameraThread.addTargetRectangle(null);
 					robot.cameraThread.setContours(null);
+					robot.vision.saveImages(true);
 
 					robot.vision.processImage(robot.cameraThread.getCurrentImage());
 					
@@ -590,6 +591,8 @@ class Teleop
 	
 	private void driveToTarget()
 	{
+		int		stopDistance = 260;
+		
 		Util.consoleLog("--------------------------------------------------------");
 
 		autoTarget = true;
@@ -618,7 +621,7 @@ class Teleop
 			int offsetx = robot.vision.offsetX();
 			int offsety = robot.vision.offsetY();
 			
-			double curve = offsetx * (1 / 100.0) * (robot.vision.getDistance() / 160);
+			double curve = offsetx * (1 / 100.0) * (robot.vision.getDistance() / stopDistance);
 					
 			Util.consoleLog("centerx=%d offx=%d  centery=%d offy=%d  dist=%.1f  cur=%.3f", centerx, offsetx, centery, 
 							offsety, robot.vision.getDistance(), curve);
@@ -640,7 +643,7 @@ class Teleop
 			Timer.delay(.25);
 
 			//robot.vision.processImage(robot.cameraThread.getCurrentImage());
-		} while (robot.isEnabled() && robot.vision.getDistance() < 160);
+		} while (robot.isEnabled() && robot.vision.getDistance() < stopDistance);
 		
 		Devices.robotDrive.stopMotor();
 		

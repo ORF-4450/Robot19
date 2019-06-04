@@ -5,18 +5,20 @@ import java.util.ArrayList;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import Team4450.Lib.Util;
 import Team4450.Robot19.GripPipeline;
 
-public class Vision 
+public class Vision implements IVision
 {
 	private Robot 			robot;
 	private GripPipeline	pipeline = new GripPipeline();
 	private Rect			targetRectangle1 = null, targetRectangle2 = null;
-	private int				centerX1 = 0, centerX2 = 0, centerY1 = 0, centerY2 = 0;
-	private boolean			targetFound;
+	private int				centerX1 = 0, centerX2 = 0, centerY1 = 0, centerY2 = 0, imageCount;
+	private int				xResolution = 320, yResolution = 240;
+	private boolean			targetFound, saveImages;
 
 	// This variable and method make sure this class is a singleton.
 	
@@ -25,6 +27,7 @@ public class Vision
 	/**
 	* Get reference to the single instance of this class shared by any caller of
 	* this method.
+	* @param robot Reference to the Robot class instance.
 	* @return Reference to single shared instance of this class.
 	*/
 	public static Vision getInstance(Robot robot) 
@@ -51,10 +54,18 @@ public class Vision
 		vision =  null;
 	}
 	
-	// This is the rest of the class.
+	/**
+	 * Save source and hsl filtered images to RoboRio disk. If you enable this you must
+	 * delete any existing saved image files before each run.
+	 * @param save True to save images.
+	 */
+	public void saveImages(boolean save)
+	{
+		saveImages = save;
+	}
 	
 	/**
-	 * Trigger the image processing pipeline to run one time with image
+	 * Trigger the image processing pipeline to run one time with current image
 	 * available internally. Only used if the pipeline does not run
 	 * automatically.
 	 */
@@ -70,31 +81,40 @@ public class Vision
 	 */
 	public void processImage(Mat image)
 	{
+		if (saveImages) Imgcodecs.imwrite(String.format("/home/lvuser/image%d.jpg", imageCount), image);
+		
 		pipeline.process(image);
+
+		if (saveImages)
+		{
+			Imgcodecs.imwrite(String.format("/home/lvuser/imagehsl%d.jpg", imageCount), pipeline.hslThresholdOutput());
+
+			imageCount++;
+		}
 		
 		targetRectangle1 = targetRectangle2 = null;
 		
 		if (pipeline.filterContoursOutput().size() > 1)
 		{
 			// When more than 2 contours, filter to 2 by removing contours too small.
-			while (pipeline.filterContoursOutput().size() > 2)
-			{
-				boolean removed = false;
-				
-				for (int i = 0; i < pipeline.filterContoursOutput().size(); i++)
-				{
-					Rect rectangle  = Imgproc.boundingRect(pipeline.filterContoursOutput().get(i));
-					
-					if (rectangle.height * rectangle.width < 300)
-					{
-						pipeline.filterContoursOutput().remove(i);
-						removed = true;
-						break;
-					}
-				}
-				
-				if (!removed) break;
-			}
+//			while (pipeline.filterContoursOutput().size() > 2)
+//			{
+//				boolean removed = false;
+//				
+//				for (int i = 0; i < pipeline.filterContoursOutput().size(); i++)
+//				{
+//					Rect rectangle  = Imgproc.boundingRect(pipeline.filterContoursOutput().get(i));
+//					
+//					if (rectangle.height * rectangle.width < 300)
+//					{
+//						pipeline.filterContoursOutput().remove(i);
+//						removed = true;
+//						break;
+//					}
+//				}
+//				
+//				if (!removed) break;
+//			}
 			
 			targetRectangle1 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
 			targetRectangle2 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(1));
@@ -112,13 +132,13 @@ public class Vision
 			         targetRectangle1.width, pipeline.filterContoursOutput().size());
 
 			Util.consoleLog("x2=%d y2=%d c=%d h=%d w=%d cnt=%d", targetRectangle2.x, targetRectangle2.y, centerX2, targetRectangle2.height,
-			         targetRectangle2.width, pipeline.filterContoursOutput().size());
+			        targetRectangle2.width, pipeline.filterContoursOutput().size());
 			
 			targetFound = true;
 		}
 		else
 		{
-			Util.consoleLog("no targets found");	//  image=%d", imageCount);
+			Util.consoleLog("no targets found contours=%d", pipeline.filterContoursOutput().size());	//  image=%d", imageCount);
 			targetFound = false;
 		}
 	}
@@ -212,7 +232,7 @@ public class Vision
 	 */
 	public int offsetX()
 	{
-		return centerX() - 160;
+		return centerX() - xResolution / 2;
 	}
 	
 	/**
@@ -222,6 +242,17 @@ public class Vision
 	 */
 	public int offsetY()
 	{
-		return 120 - centerY();
+		return yResolution / 2 - centerY();
+	}
+
+	/**
+	 * Set camera resolution. Defaults to 320x240.
+	 * @param x X axis resolution.
+	 * @param y Y Axis resolution.
+	 */
+	public void setResolution( int x, int y )
+	{
+		xResolution = x;
+		yResolution = y;
 	}
 }

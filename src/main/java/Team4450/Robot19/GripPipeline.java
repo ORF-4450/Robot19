@@ -1,5 +1,6 @@
-
 package Team4450.Robot19;
+
+import	Team4450.Lib.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -41,15 +42,17 @@ public class GripPipeline {
 	public void process(Mat source0) {
 		// Step HSL_Threshold0:
 		Mat hslThresholdInput = source0;
-		double[] hslThresholdHue = {32.37410071942446, 111.61434488772619};
-		double[] hslThresholdSaturation = {0.0, 186.31313131313132};
-		double[] hslThresholdLuminance = {124.74820143884891, 203.4848484848485};
+		double[] hslThresholdHue = {32, 111};
+		double[] hslThresholdSaturation = {0, 186};
+		double[] hslThresholdLuminance = {124, 160};
 		hslThreshold(hslThresholdInput, hslThresholdHue, hslThresholdSaturation, hslThresholdLuminance, hslThresholdOutput);
 
 		// Step Find_Contours0:
 		Mat findContoursInput = hslThresholdOutput;
 		boolean findContoursExternalOnly = false;
 		findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
+
+		Util.consoleLog("contours count=%d", findContoursOutput.size());
 
 		// Step Filter_Contours0:
 		ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
@@ -59,12 +62,14 @@ public class GripPipeline {
 		double filterContoursMaxWidth = 1000.0;
 		double filterContoursMinHeight = 1.0;
 		double filterContoursMaxHeight = 1000.0;
-		double[] filterContoursSolidity = {80.03597122302158, 100.0};
-		double filterContoursMaxVertices = 1000.0;
+		double[] filterContoursSolidity = {80.0, 100};
+		double filterContoursMaxVertices = 100.0;
 		double filterContoursMinVertices = 10.0;
 		double filterContoursMinRatio = 0.4;
 		double filterContoursMaxRatio = 0.65;
 		filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursOutput);
+
+		Util.consoleLog("filer count=%d", filterContoursOutput.size());
 
 	}
 
