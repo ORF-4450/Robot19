@@ -10,12 +10,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GearBox
 {
-	private Robot		robot;
-	private boolean		lowSpeed,  highSpeed;
+	private Robot			robot;
+	private boolean			lowSpeed,  highSpeed;
 	
 	// This variable used to make this class is a singleton.
 	
-	public static GearBox gearBox = null;
+	private static GearBox 	gearBox = null;
 	
 	private GearBox (Robot robot)
 	{

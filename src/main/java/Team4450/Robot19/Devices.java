@@ -88,7 +88,8 @@ public class Devices
 	  private static boolean			talonBrakeMode;
 	  
 	  public static GearBox				gearBox;
-	  public static Vision				vision;
+	  //public static Vision				vision;
+	  //public static VisionLL			visionLL;
 	  public static Climber				climber;
 	  public static Pickup				pickup;
 	  public static Lift				lift;
@@ -233,7 +234,9 @@ public class Devices
  		  
  		  gearBox = GearBox.getInstance(robot);
  		  
- 		  vision = Vision.getInstance(robot);
+ 		  //vision = Vision.getInstance(robot);
+ 		  
+ 		  //visionLL = VisionLL.getInstance(robot);
  		  
  		  climber = Climber.getInstance(robot);
  		  

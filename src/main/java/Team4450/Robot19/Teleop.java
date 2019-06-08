@@ -23,7 +23,7 @@ class Teleop
 	
 	// This variable used to make this class is a singleton.
 	
-	public static Teleop teleop = null;
+	private static Teleop 		teleop = null;
 	
 	// Private constructor prevents multiple instances from being created.
 
@@ -490,22 +490,43 @@ class Teleop
 					robot.cameraThread.addTargetRectangle(null);
 					robot.cameraThread.setContours(null);
 					robot.vision.saveImages(true);
+//
+//					robot.vision.processImage(robot.cameraThread.getCurrentImage());
+//					
+//					if (robot.vision.targetVisible())
+//					{
+//						robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(0));
+//						robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(1));
+//						robot.cameraThread.setContours(robot.vision.getContours());
+//						
+//						int centerx = robot.vision.centerX();
+//						int centery = robot.vision.centerY();
+//						int offsetx = robot.vision.offsetX();
+//						int offsety = robot.vision.offsetY();
+//						
+//						Util.consoleLog("centerx=%d offx=%d  centery=%d offy=%d  dist=%.1f", centerx, offsetx, centery, 
+//										offsety, robot.vision.getDistance());
+//						
+//						robot.cameraThread.addTargetRectangle(new Rect(centerx-5,centery-5,10,10));
+//					}
 
-					robot.vision.processImage(robot.cameraThread.getCurrentImage());
+					robot.visionLL.processImage();
 					
-					if (robot.vision.targetVisible())
+					if (robot.visionLL.targetVisible())
 					{
-						robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(0));
-						robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(1));
-						robot.cameraThread.setContours(robot.vision.getContours());
+						Rect	tRect = robot.visionLL.getTargetRectangle();
 						
-						int centerx = robot.vision.centerX();
-						int centery = robot.vision.centerY();
-						int offsetx = robot.vision.offsetX();
-						int offsety = robot.vision.offsetY();
+						robot.cameraThread.addTargetRectangle(tRect);
+						
+						Util.consoleLog("x=%d  x=%d  h=%d  w=%d", tRect.x, tRect.y, tRect.height, tRect.width);
+
+						int centerx = robot.visionLL.centerX();
+						int centery = robot.visionLL.centerY();
+						int offsetx = robot.visionLL.offsetX();
+						int offsety = robot.visionLL.offsetY();
 						
 						Util.consoleLog("centerx=%d offx=%d  centery=%d offy=%d  dist=%.1f", centerx, offsetx, centery, 
-										offsety, robot.vision.getDistance());
+										offsety, robot.visionLL.getDistance());
 						
 						robot.cameraThread.addTargetRectangle(new Rect(centerx-5,centery-5,10,10));
 					}
@@ -513,7 +534,7 @@ class Teleop
 					break;
 					
 				case TOP_LEFT:
-					driveToTarget();
+					driveToTargetLL();
 					break;
 
 				default:
@@ -598,11 +619,6 @@ class Teleop
 		autoTarget = true;
 		Devices.robotDrive.setSafetyEnabled(false);
 
-		//robot.vision.processImage(robot.cameraThread.getCurrentImage());
-		
-		// Drive toward target until distance (pixels between target centers = 160).
-		
-		//while (robot.isEnabled() && robot.vision.targetVisible() && robot.vision.getDistance() < 160)
 		do
 		{
 			robot.cameraThread.addTargetRectangle(null);
@@ -642,8 +658,71 @@ class Teleop
 
 			Timer.delay(.25);
 
-			//robot.vision.processImage(robot.cameraThread.getCurrentImage());
 		} while (robot.isEnabled() && robot.vision.getDistance() < stopDistance);
+		
+		Devices.robotDrive.stopMotor();
+		
+		autoTarget = false;
+		Devices.robotDrive.setSafetyEnabled(true);
+
+		Util.consoleLog("end driveToTarget");
+	}
+	
+	private void driveToTargetLL()
+	{
+		int		stopDistance = 8;
+		Rect	tRect;
+		double	distance = 0;
+		
+		Util.consoleLog("--------------------------------------------------------");
+
+		autoTarget = true;
+		Devices.robotDrive.setSafetyEnabled(false);
+		robot.cameraThread.setContours(null);
+
+		do
+		{
+			robot.cameraThread.addTargetRectangle(null);
+
+			robot.visionLL.processImage();
+			
+			if (!robot.visionLL.targetVisible()) break;
+			
+			tRect = robot.visionLL.getTargetRectangle();
+			
+			distance = robot.visionLL.getDistance();
+			
+			robot.cameraThread.addTargetRectangle(tRect);
+			
+			Util.consoleLog("x=%d  x=%d  h=%d  w=%d", tRect.x, tRect.y, tRect.height, tRect.width);
+			
+			int centerx = robot.visionLL.centerX();
+			int centery = robot.visionLL.centerY();
+			int offsetx = robot.visionLL.offsetX();
+			int offsety = robot.visionLL.offsetY();
+			
+			double curve = offsetx * (1 / 30.0) * (distance / stopDistance);
+					
+			Util.consoleLog("centerx=%d offx=%d  centery=%d offy=%d  dist=%.1f  cur=%.3f", centerx, offsetx, centery, 
+							offsety, distance, curve);
+			
+			//robot.cameraThread.addTargetRectangle(new Rect(centerx-5, centery-5, 10, 10));
+
+			// Steer based on center of robot field of vision offset from target center (X axis). 
+			// + offset is target right of center so we want to turn right. - offset is target left
+			// of center so we want to turn left.
+			// We invert since a - value causes left turn which would correct the right of center
+			// robot heading. Adjust gain for reasonable correction effect, use distance to scale the
+			// correction. At distance we want small corrections, as we approach target corrections
+			// need to get larger. That would be 1/180. 
+			
+			//Devices.robotDrive.curvatureDrive(.25, offsetx * .003, false);
+			//Devices.robotDrive.tankDrive(.30, .30);
+			Devices.robotDrive.curvatureDrive(.25, curve, false);
+
+			Timer.delay(.25);
+
+		} while (robot.isEnabled() && distance < stopDistance);
 		
 		Devices.robotDrive.stopMotor();
 		

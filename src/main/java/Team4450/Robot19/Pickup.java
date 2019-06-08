@@ -13,7 +13,7 @@ public class Pickup
 	
 	// This variable and method make sure this class is a singleton.
 	
-	public static Pickup pickup = null;
+	private static Pickup pickup = null;
 	
 	/**
 	* Get reference to the single instance of this class shared by any caller of

@@ -41,6 +41,7 @@ public class Robot extends SampleRobot
   MonitorCompressor		monitorCompressorThread;
   CameraFeed			cameraThread;
   Vision				vision;
+  VisionLL				visionLL;
   
   Teleop 				teleOp;
   Autonomous 			autonomous;
@@ -166,6 +167,8 @@ public class Robot extends SampleRobot
        	cameraThread.start();
        	
        	vision = Vision.getInstance(this);
+       	
+       	visionLL = VisionLL.getInstance(this);
        	
        	// Configure autonomous program choices sendable chooser.
        	

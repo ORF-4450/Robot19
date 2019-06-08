@@ -11,7 +11,7 @@ import org.opencv.imgproc.Imgproc;
 import Team4450.Lib.Util;
 import Team4450.Robot19.GripPipeline;
 
-public class Vision implements IVision
+public class Vision
 {
 	private Robot 			robot;
 	private GripPipeline	pipeline = new GripPipeline();
@@ -22,7 +22,7 @@ public class Vision implements IVision
 
 	// This variable and method make sure this class is a singleton.
 	
-	public static Vision vision = null;
+	private static Vision 	vision = null;
 	
 	/**
 	* Get reference to the single instance of this class shared by any caller of
@@ -173,9 +173,9 @@ public class Vision implements IVision
 	
 	/**
 	 * Returns the contours returned by the last run of the image processing pipeline representing
-	 * the targets in the field of vision of camera. Not valid if targetVisible is
+	 * the visible objects in the field of vision of camera. Not valid if targetVisible is
 	 * not true.
-	 * @return An array of target contours or null.
+	 * @return An array of contours or null.
 	 */
 	public ArrayList<MatOfPoint> getContours()
 	{
@@ -185,7 +185,7 @@ public class Vision implements IVision
 	}
 	
 	/**
-	 * Returns the distance value to the target(s). The distance is typically the number of
+	 * Returns the distance value to the targets. The distance is the number of
 	 * pixels separating two target centers in the camera field of vision.
 	 * @return The distance to the targets.
 	 */
@@ -193,9 +193,10 @@ public class Vision implements IVision
 	{
 		return Math.abs(centerX1 - centerX2);
 	}
+	
 	/**
 	 * Return target center offset X axis.
-	 * @return The X axis offset from left edge.
+	 * @return The X axis offset from left edge in pixels.
 	 */
 	public int centerX()
 	{
@@ -211,7 +212,7 @@ public class Vision implements IVision
 	
 	/**
 	 * Return target center offset Y axis.
-	 * @return The Y axis offset from top edge.
+	 * @return The Y axis offset from top edge in pixels.
 	 */
 	public int centerY()
 	{
@@ -228,7 +229,7 @@ public class Vision implements IVision
 	/**
 	 * Return target center X offset from field of vision center.
 	 * @return Target center X axis offset from field of vision center, - is left of
-	 * center, + is right of center.
+	 * center, + is right of center, in pixels.
 	 */
 	public int offsetX()
 	{
@@ -238,7 +239,7 @@ public class Vision implements IVision
 	/**
 	 * Return target center Y offset from field of vision center.
 	 * @return Target center Y axis offset from field of vision center, - is below 
-	 * center, + is above center.
+	 * center, + is above center, in pixels.
 	 */
 	public int offsetY()
 	{
@@ -247,8 +248,8 @@ public class Vision implements IVision
 
 	/**
 	 * Set camera resolution. Defaults to 320x240.
-	 * @param x X axis resolution.
-	 * @param y Y Axis resolution.
+	 * @param x X axis resolution in pixels.
+	 * @param y Y Axis resolution in pixels.
 	 */
 	public void setResolution( int x, int y )
 	{
