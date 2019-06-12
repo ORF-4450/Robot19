@@ -20,7 +20,8 @@ class Teleop
 {
 	private final Robot 		robot;
 	private boolean				autoTarget, altDriveMode;
-	
+	private double				timeMarker = 0;
+
 	// This variable used to make this class is a singleton.
 	
 	private static Teleop 		teleop = null;
@@ -489,7 +490,7 @@ class Teleop
 				case TOP_MIDDLE:
 					robot.cameraThread.addTargetRectangle(null);
 					robot.cameraThread.setContours(null);
-					robot.vision.saveImages(true);
+//					robot.vision.saveImages(true);
 //
 //					robot.vision.processImage(robot.cameraThread.getCurrentImage());
 //					
@@ -518,7 +519,7 @@ class Teleop
 						
 						robot.cameraThread.addTargetRectangle(tRect);
 						
-						Util.consoleLog("x=%d  x=%d  h=%d  w=%d", tRect.x, tRect.y, tRect.height, tRect.width);
+						Util.consoleLog("x=%d  y=%d  h=%d  w=%d", tRect.x, tRect.y, tRect.height, tRect.width);
 
 						int centerx = robot.visionLL.centerX();
 						int centery = robot.visionLL.centerY();
@@ -626,7 +627,7 @@ class Teleop
 
 			robot.vision.processImage(robot.cameraThread.getCurrentImage());
 			
-			if (!robot.vision.targetVisible()) break;
+			if (!isTargetVisible(robot.vision.targetVisible())) break;
 			
 			robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(0));
 			robot.cameraThread.addTargetRectangle(robot.vision.getTargetRectangles().get(1));
@@ -679,29 +680,26 @@ class Teleop
 		autoTarget = true;
 		Devices.robotDrive.setSafetyEnabled(false);
 		robot.cameraThread.setContours(null);
+		robot.cameraThread.addTargetRectangle(null);
 
 		do
 		{
-			robot.cameraThread.addTargetRectangle(null);
-
 			robot.visionLL.processImage();
 			
-			if (!robot.visionLL.targetVisible()) break;
+			if (!isTargetVisible(robot.visionLL.targetVisible())) break;
 			
 			tRect = robot.visionLL.getTargetRectangle();
 			
 			distance = robot.visionLL.getDistance();
 			
-			robot.cameraThread.addTargetRectangle(tRect);
-			
-			Util.consoleLog("x=%d  x=%d  h=%d  w=%d", tRect.x, tRect.y, tRect.height, tRect.width);
+			Util.consoleLog("x=%d  y=%d  h=%d  w=%d", tRect.x, tRect.y, tRect.height, tRect.width);
 			
 			int centerx = robot.visionLL.centerX();
 			int centery = robot.visionLL.centerY();
 			int offsetx = robot.visionLL.offsetX();
 			int offsety = robot.visionLL.offsetY();
 			
-			double curve = offsetx * (1 / 30.0) * (distance / stopDistance);
+			double curve = offsetx * (1 / 23.0); // * (distance / stopDistance);
 					
 			Util.consoleLog("centerx=%d offx=%d  centery=%d offy=%d  dist=%.1f  cur=%.3f", centerx, offsetx, centery, 
 							offsety, distance, curve);
@@ -711,10 +709,9 @@ class Teleop
 			// Steer based on center of robot field of vision offset from target center (X axis). 
 			// + offset is target right of center so we want to turn right. - offset is target left
 			// of center so we want to turn left.
-			// We invert since a - value causes left turn which would correct the right of center
-			// robot heading. Adjust gain for reasonable correction effect, use distance to scale the
+			// Adjust gain for reasonable correction effect, use distance to scale the
 			// correction. At distance we want small corrections, as we approach target corrections
-			// need to get larger. That would be 1/180. 
+			// need to get larger. That would be 1/8 (% area). 
 			
 			//Devices.robotDrive.curvatureDrive(.25, offsetx * .003, false);
 			//Devices.robotDrive.tankDrive(.30, .30);
@@ -729,6 +726,35 @@ class Teleop
 		autoTarget = false;
 		Devices.robotDrive.setSafetyEnabled(true);
 
-		Util.consoleLog("end driveToTarget");
+		Util.consoleLog("end driveToTargetLL");
+	}
+	
+	// Allow for intermittent target visible indication. Target must be not visible
+	// for .7 of a second. Not visible for less than .7 is converted to visible.
+	// This counters the intermittent issue of the target filtering on both Grip and LL.
+	
+	private boolean isTargetVisible(boolean visible)
+	{
+		Util.consoleLog();
+		
+		if (visible)
+			timeMarker = 0;
+		else
+		{
+			if (timeMarker == 0)
+			{
+				visible = true;
+				timeMarker = Util.timeStamp();
+			}
+			else if (Util.getElaspedTime(timeMarker) < .70)
+				visible = true;
+			else
+			{
+				visible = false;
+				timeMarker = 0;
+			}
+		}
+		
+		return visible;
 	}
 }

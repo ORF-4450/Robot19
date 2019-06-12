@@ -112,10 +112,11 @@ public class Devices
 		  
 	      // Initialize CAN Talons and write status to log so we can verify
 	      // all the Talons are connected.
-	      InitializeCANTalon(LFCanTalon);
+	      //InitializeCANTalon(LFCanTalon);
 	      InitializeCANTalon(LRCanTalon);
 	      InitializeCANTalon(RFCanTalon);
 	      InitializeCANTalon(RRCanTalon);
+	      InitializeCANTalon(LFCanTalon);
 
 	      // Configure CAN Talons with correct inversions.
 	      LFCanTalon.setInverted(true);

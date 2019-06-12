@@ -116,7 +116,7 @@ public class VisionLL
 	{
 		int pixels = (int) (Math.abs(value) * (xResolution / 2));
 		
-		if (pixels >= 0)
+		if (value >= 0)
 			pixels += xResolution / 2;
 		else
 			pixels = (xResolution / 2) - pixels;
@@ -133,7 +133,7 @@ public class VisionLL
 	{
 		int pixels = (int) (Math.abs(value) * (yResolution / 2));
 		
-		if (pixels >= 0)
+		if (value >= 0)
 			pixels += yResolution / 2;
 		else
 			pixels = (yResolution / 2) - pixels;
@@ -205,7 +205,7 @@ public class VisionLL
 	/**
 	 * Return the target center Y axis offset from the center of the field of view.
 	 * Note, the center of field of view the the location of the cursor.
-	 * @return The offset in degrees.
+	 * @return The offset in degrees. - target is below center, + target is above center.
 	 */
 	public int offsetY()
 	{
