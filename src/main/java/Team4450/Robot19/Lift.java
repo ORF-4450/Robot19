@@ -59,10 +59,21 @@ public class Lift
 		Devices.winchEncoder.reset();
 		Devices.hatchEncoder.reset();
 		
+		holdingPosition = holdingHeight = holdingHatchHeight = false;
+		hatchReleased = hatchMidPosition = false;
+		
 		// Set hatch grabber to hold hatch position.
 		grabHatch();
 				
 		updateDS();
+	}
+	
+	public void disable()
+	{
+		Util.consoleLog();
+		
+		liftPidController.disable();
+		hatchPidController.disable();
 	}
 	
 	/**

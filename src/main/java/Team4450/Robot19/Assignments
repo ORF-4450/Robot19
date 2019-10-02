@@ -103,7 +103,7 @@ BUTTON_BLACK            Toggle retracting and extending the pistons on the back 
 BUTTON BLUE             Toggle retracting and extending the pistons on the front (Need to test if toggle works).
 
 ROCKER_LEFT_FRONT		Switch Cameras.
-//ROCKER_LEFT_BACK		Toggle drive talon brake mode.
+//ROCKER_LEFT_BACK		Toggle drive talon brake mode. 
 ROCKER_LEFT_BACK        Toggle between cameras on pi and roboRio (Needs testing).
 ROCKER_RIGHT            Set hatchMotor to out of the way or for scoring (Needs testing).
 

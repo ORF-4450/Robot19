@@ -12,7 +12,8 @@ import Team4450.Lib.NavX.NavXEvent;
 import Team4450.Lib.NavX.NavXEventListener;
 import Team4450.Lib.NavX.NavXEventType;
 import Team4450.Robot19.Devices;
-
+import Team4450.Robot19.VisionLL.CameraMode;
+import Team4450.Robot19.VisionLL.LedMode;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -119,6 +120,8 @@ class Teleop
 		Devices.rightEncoder.resetMaxRate();
 		
 		Devices.gearBox.lowSpeed();
+		
+		// Put subsystem objects into start up state.
 		Devices.climber.initialize();
 		Devices.pickup.initialize();
 		Devices.lift.initialize();
@@ -513,13 +516,17 @@ class Teleop
 
 					robot.visionLL.processImage();
 					
+					robot.visionLL.setLedMode(LedMode.off);
+					robot.visionLL.setCameraMode(CameraMode.driver);
+
 					if (robot.visionLL.targetVisible())
 					{
 						Rect	tRect = robot.visionLL.getTargetRectangle();
 						
 						robot.cameraThread.addTargetRectangle(tRect);
 						
-						Util.consoleLog("x=%d  y=%d  h=%d  w=%d", tRect.x, tRect.y, tRect.height, tRect.width);
+						Util.consoleLog("x=%d  y=%d  h=%d  w=%d  pl=%d  lt=%d", tRect.x, tRect.y, tRect.height, tRect.width,
+								robot.visionLL.getPipeline(), robot.visionLL.getLatency());
 
 						int centerx = robot.visionLL.centerX();
 						int centery = robot.visionLL.centerY();
@@ -681,6 +688,9 @@ class Teleop
 		Devices.robotDrive.setSafetyEnabled(false);
 		robot.cameraThread.setContours(null);
 		robot.cameraThread.addTargetRectangle(null);
+		
+		robot.visionLL.setLedMode(LedMode.on);
+		robot.visionLL.setCameraMode(CameraMode.vision);
 
 		do
 		{
@@ -692,7 +702,8 @@ class Teleop
 			
 			distance = robot.visionLL.getDistance();
 			
-			Util.consoleLog("x=%d  y=%d  h=%d  w=%d", tRect.x, tRect.y, tRect.height, tRect.width);
+			Util.consoleLog("x=%d  y=%d  h=%d  w=%d  pl=%d  lt=%d", tRect.x, tRect.y, tRect.height, tRect.width,
+					robot.visionLL.getPipeline(), robot.visionLL.getLatency());
 			
 			int centerx = robot.visionLL.centerX();
 			int centery = robot.visionLL.centerY();

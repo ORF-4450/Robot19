@@ -44,7 +44,20 @@ public class Pickup
 	
 	public void initialize()
 	{
+		Util.consoleLog();
+		
+		extended = intakeRunning = spitRunning = autoIntake = false;
+		
 		retract();
+	}
+	
+	public void disable()
+	{
+		Util.consoleLog();
+		
+		if (isAutoIntakeRunning()) stopAutoIntake();
+		
+		if (intakeRunning) intakeBall();
 	}
 	
 	/**
@@ -53,6 +66,8 @@ public class Pickup
 	public void dispose()
 	{
 		Util.consoleLog();
+		
+		disable();
 		
 		pickup =  null;
 	}
@@ -123,7 +138,7 @@ public class Pickup
 		
 		spitRunning = true;
 		
-		Devices.ballSpit.set(.60);
+		Devices.ballSpit.set(.80);
 		Devices.pickupMotor.set(-.60);
 
 		Timer.delay(.5);
@@ -213,7 +228,7 @@ public class Pickup
     	    		if (extended && Devices.ballSensor.getValue() < 700)
     	    		{
     	    			Util.consoleLog("ball passed=%d", Devices.ballSensor.getValue());
-    	    			//retract();
+    	    			retract();
     	    		}
     	    		
     	            // We sleep since JS updates come from DS every 20ms or so. We wait 10ms so this thread

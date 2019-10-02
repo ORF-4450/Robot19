@@ -41,6 +41,17 @@ public class Climber
 	
 	public void initialize()
 	{
+		Util.consoleLog();
+		
+		retractFrontClimb(true);
+		
+		retractRearClimb();
+	}
+	
+	public void disable()
+	{
+		Util.consoleLog();
+		
 		retractFrontClimb(true);
 		
 		retractRearClimb();
@@ -53,9 +64,7 @@ public class Climber
 	{
 		Util.consoleLog();
 		
-		retractFrontClimb(true);
-		
-		retractRearClimb();
+		disable();
 
 		climber =  null;
 	}

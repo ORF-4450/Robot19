@@ -113,10 +113,10 @@ public class Devices
 	      // Initialize CAN Talons and write status to log so we can verify
 	      // all the Talons are connected.
 	      //InitializeCANTalon(LFCanTalon);
+	      InitializeCANTalon(LFCanTalon);
 	      InitializeCANTalon(LRCanTalon);
 	      InitializeCANTalon(RFCanTalon);
 	      InitializeCANTalon(RRCanTalon);
-	      InitializeCANTalon(LFCanTalon);
 
 	      // Configure CAN Talons with correct inversions.
 	      LFCanTalon.setInverted(true);
@@ -232,6 +232,8 @@ public class Devices
 
  		  // Create utility stick with all buttons monitored and auto start.
  		  utilityStick = new JoyStick(new Joystick(2), "UtilityStick");
+ 		  
+ 		  // Create instances of the singleton subsystem classes.
  		  
  		  gearBox = GearBox.getInstance(robot);
  		  

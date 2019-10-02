@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 @SuppressWarnings("deprecation")
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC19-06.12.19-01";
+  static final String  	PROGRAM_NAME = "RAC19-10.02.19-01";
 
   public Properties		robotProperties;
   
@@ -200,6 +200,10 @@ public class Robot extends SampleRobot
 		  Util.consoleLog();
           
           currentRobotState = RobotState.disabled;
+          
+          if (Devices.lift != null) Devices.lift.disable();
+          if (Devices.climber != null) Devices.climber.disable();
+          if (Devices.pickup != null) Devices.pickup.disable();
 
 		  LCD.printLine(1, "Mode: Disabled");
 		  
@@ -330,6 +334,7 @@ public class Robot extends SampleRobot
   }
 
   // Start usb camera server for single camera.
+  // This is not currently used.
   
   public void StartUSBCameraServer(String cameraName, int device)
   {
@@ -352,6 +357,8 @@ public class Robot extends SampleRobot
     		  		   alliance.name(), location, Devices.ds.isFMSAttached(), eventName, matchNumber, 
     		  		   gameMessage);
   }
+  
+  // Enumeration used to track current robot state.
   
   public enum RobotState
   {

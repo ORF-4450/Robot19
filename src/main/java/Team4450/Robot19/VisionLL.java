@@ -13,7 +13,6 @@ import edu.wpi.first.networktables.*;
 public class VisionLL 
 {
 	private Robot 			robot;
-	private Rect			targetRectangle = null;
 	private int				targetX = 0, targetY = 0, targetWidth = 0, targetHeight = 0;
 	private int				xResolution = 320, yResolution = 240;
 	private boolean			targetFound;
@@ -22,7 +21,7 @@ public class VisionLL
 
 	private NetworkTable	networkTable = NetworkTableInstance.getDefault().getTable("limelight");
 	
-	private double			xOffset, yOffset, area, pipeLine, skew;
+	private double			xOffset, yOffset, area, skew, pipeLine, latency;
 
 	NetworkTableEntry		tv = networkTable.getEntry("tv");
 	NetworkTableEntry		tx = networkTable.getEntry("tx");
@@ -30,11 +29,37 @@ public class VisionLL
 	NetworkTableEntry		ta = networkTable.getEntry("ta");
 	NetworkTableEntry		pl = networkTable.getEntry("getpipe");
 	NetworkTableEntry		ts = networkTable.getEntry("ts");
+	NetworkTableEntry		tl = networkTable.getEntry("tl");
 	NetworkTableEntry		thor = networkTable.getEntry("thor");
 	NetworkTableEntry		tvert = networkTable.getEntry("tvert");
 	NetworkTableEntry		snapshot = networkTable.getEntry("snapshot");
 	NetworkTableEntry		tx0 = networkTable.getEntry("tx0");
 	NetworkTableEntry		ty0 = networkTable.getEntry("ty0");
+	NetworkTableEntry		ledMode = networkTable.getEntry("ledMode");
+	NetworkTableEntry		camMode = networkTable.getEntry("camMode");
+	NetworkTableEntry		pipeline = networkTable.getEntry("pipline");
+	NetworkTableEntry		streamMode = networkTable.getEntry("stream");
+
+	public enum LedMode
+	{
+		pipline,
+		off,
+		blink,
+		on;
+	}
+	
+	public enum CameraMode
+	{
+		vision,
+		driver;
+	}
+	
+	public enum StreamMode
+	{
+		standard,
+		pipMain,
+		pipSecondary;
+	}
 	
 	// This variable and method make sure this class is a singleton.
 	
@@ -100,6 +125,7 @@ public class VisionLL
 		area = ta.getDouble(0);
 		pipeLine = pl.getDouble(0);
 		skew = ts.getDouble(0);
+		latency = tl.getDouble(0);
 		targetWidth = (int) thor.getDouble(0);
 		targetHeight = (int) tvert.getDouble(0);
 		
@@ -212,9 +238,77 @@ public class VisionLL
 		return (int) yOffset;
 	}
 
+	/**
+	 * Set the resolution to be used in calculations.
+	 * @param x X axis resolution.
+	 * @param y Y axis resolution.
+	 */
 	public void setResolution(int x, int y)
 	{
 		xResolution = x;
 		yResolution = y;	
+	}
+	
+	/**
+	 * Set the camera led mode of operation.
+	 * @param mode Led mode.
+	 */
+	public void setLedMode(LedMode mode)
+	{
+		ledMode.setDouble((double) mode.ordinal());
+	}
+	
+	/**
+	 * Set the camera mode of operation.
+	 * @param mode Camera mode. 
+	 */
+	public void setCameraMode(CameraMode mode)
+	{
+		camMode.setDouble((double) mode.ordinal());
+	}
+	
+	/**
+	 * Sets the streaming mode of the camera feed
+	 * @param mode Stream mode.
+	 */
+	public void setStreamMode(StreamMode mode)
+	{
+		streamMode.setDouble((double) mode.ordinal());
+	}
+	
+	/**
+	 * Selects the pipeline in the LL memory as active.
+	 * @param pipeline Pipeline number.
+	 */
+	public void selectPipeline(int pipeline)
+	{
+		this.pipeline.setDouble((double) pipeline);
+	}
+	
+	/**
+	 * Returns the active pipeline number.
+	 * @return The active pipeline.
+	 */
+	public int getPipeline()
+	{
+		return (int) pipeLine;
+	}
+	
+	/**
+	 * Returns the skew angle.
+	 * @return Skew angle -90 to 0.
+	 */
+	public int getSkew()
+	{
+		return (int) skew;
+	}
+	
+	/**
+	 * Pipeline processing time.
+	 * @return Processing time (latency) in ms.
+	 */
+	public int getLatency()
+	{
+		return (int) latency;
 	}
 }
