@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import Team4450.Robot19.Devices;
 
-public class Pickup 
+public class Pickup extends SubSystem
 {
 	private Robot 	robot;
 	private boolean	extended = false, intakeRunning = false, spitRunning = false, autoIntake = false;
@@ -42,7 +42,7 @@ public class Pickup
 		Util.consoleLog("Pickup created!");
 	}
 	
-	public void initialize()
+	public void enable()
 	{
 		Util.consoleLog();
 		
@@ -249,7 +249,7 @@ public class Pickup
 	    }
 	}	// end of AutoIntake thread class.
 
-	private void updateDS()
+	protected void updateDS()
 	{
 		SmartDashboard.putBoolean("Intake", intakeRunning);
 		SmartDashboard.putBoolean("Spit", spitRunning);

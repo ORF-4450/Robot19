@@ -119,12 +119,11 @@ class Teleop
 		Devices.leftEncoder.resetMaxRate();
 		Devices.rightEncoder.resetMaxRate();
 		
-		Devices.gearBox.lowSpeed();
-		
 		// Put subsystem objects into start up state.
-		Devices.climber.initialize();
-		Devices.pickup.initialize();
-		Devices.lift.initialize();
+		Devices.gearBox.enable();
+		Devices.climber.enable();
+		Devices.pickup.enable();
+		Devices.lift.enable();
 		
 		// Motor safety turned on.
 		Devices.robotDrive.setSafetyEnabled(true);

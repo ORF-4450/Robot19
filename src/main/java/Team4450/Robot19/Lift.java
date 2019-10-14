@@ -7,7 +7,7 @@ import Team4450.Robot19.Devices;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Lift 
+public class Lift extends SubSystem
 {
 	private Robot 				robot;
 	private boolean				holdingPosition = false, holdingHeight = false, holdingHatchHeight = false;
@@ -54,7 +54,7 @@ public class Lift
 		Util.consoleLog("Lift created!");
 	}
 	
-	public void initialize()
+	public void enable()
 	{
 		Devices.winchEncoder.reset();
 		Devices.hatchEncoder.reset();
@@ -94,7 +94,7 @@ public class Lift
 	
 	// This is the rest of the class.
 	
-	public void updateDS()
+	protected void updateDS()
 	{
 		SmartDashboard.putBoolean("LiftHoldingHeight", holdingHeight);
 		SmartDashboard.putBoolean("LiftHoldingPosition", holdingPosition);

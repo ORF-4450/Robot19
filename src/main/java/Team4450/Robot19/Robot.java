@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 @SuppressWarnings("deprecation")
 public class Robot extends SampleRobot 
 {
-  static final String  	PROGRAM_NAME = "RAC19-10.02.19-01";
+  static final String  	PROGRAM_NAME = "RAC19-10.13.19-01";
 
   public Properties		robotProperties;
   
@@ -201,6 +201,7 @@ public class Robot extends SampleRobot
           
           currentRobotState = RobotState.disabled;
           
+          if (Devices.gearBox != null) Devices.gearBox.disable();
           if (Devices.lift != null) Devices.lift.disable();
           if (Devices.climber != null) Devices.climber.disable();
           if (Devices.pickup != null) Devices.pickup.disable();

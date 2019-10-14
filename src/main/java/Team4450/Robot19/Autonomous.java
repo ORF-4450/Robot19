@@ -37,6 +37,10 @@ public class Autonomous
 		
 		lift = Lift.getInstance(robot);
 		
+		lift.enable();				// put lift in initial configuration.
+		
+		Devices.gearBox.enable();	// set low speed.
+		
 		Util.consoleLog("Automomous created!");
 	}
 	

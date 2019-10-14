@@ -39,7 +39,7 @@ public class Climber extends SubSystem
 		Util.consoleLog("Climber created!");
 	}
 	
-	public void initialize()
+	public void enable()
 	{
 		Util.consoleLog();
 		
@@ -131,7 +131,7 @@ public class Climber extends SubSystem
 		updateDS();
 	}
 
-	private void updateDS()
+	protected void updateDS()
 	{
 		SmartDashboard.putBoolean("FrontClimbExtended", frontClimbExtended);
 		SmartDashboard.putBoolean("RearClimbExtended", rearClimbExtended);

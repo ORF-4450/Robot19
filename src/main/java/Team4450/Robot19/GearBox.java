@@ -8,7 +8,7 @@ import Team4450.Lib.*;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class GearBox
+public class GearBox extends SubSystem
 {
 	private Robot			robot;
 	private boolean			lowSpeed,  highSpeed;
@@ -39,7 +39,26 @@ public class GearBox
 		
 		return gearBox;		
 	}
-	
+
+	/*
+	 * Called when robot enabled.
+	 */
+	void enable()
+	{
+		Util.consoleLog();
+		
+		lowSpeed();
+	}
+
+	/*
+	 * Called when robot disabled.
+	 */
+	void disable()
+	{
+		Util.consoleLog();
+		
+	}
+
 	/**
 	 * Release any resources and the shared instance of this class.
 	 */
@@ -50,7 +69,7 @@ public class GearBox
 		gearBox = null;
 	}
 	
-	private void displayStatus()
+	protected void updateDS()
 	{
 		Util.consoleLog("low=%b, high=%b", lowSpeed, highSpeed);
 		
@@ -74,7 +93,7 @@ public class GearBox
 		
 		lowSpeed = true;
 		
-		displayStatus();
+		updateDS();
 	}
 
 	/**
@@ -93,7 +112,7 @@ public class GearBox
 		
 		highSpeed = true;
 		
-		displayStatus();
+		updateDS();
 	}
 
 	/**

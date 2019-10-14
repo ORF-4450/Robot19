@@ -28,5 +28,5 @@ public abstract class SubSystem
 	 * Common function where subsystem should set the DS indicators to the
 	 * subsystem's current status as appropriate.
 	 */
-	abstract void updateDS();
+	abstract protected void updateDS();
 }
