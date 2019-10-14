@@ -3,14 +3,14 @@ package Team4450.Robot19;
 import Team4450.Lib.Util;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Climber 
+public class Climber extends SubSystem
 {
 	private Robot 	robot;
 	private boolean	frontClimbExtended = false, rearClimbExtended = false;
 	
 	// This variable and method make sure this class is a singleton.
 	
-	public static Climber climber = null;
+	private static Climber climber = null;
 	
 	/**
 	* Get reference to the single instance of this class shared by any caller of
@@ -36,7 +36,7 @@ public class Climber
 		
 		//initialize();
 		
-		Util.consoleLog("Pickup created!");
+		Util.consoleLog("Climber created!");
 	}
 	
 	public void initialize()

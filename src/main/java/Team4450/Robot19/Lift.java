@@ -18,7 +18,7 @@ public class Lift
 
 	// This variable used to make this class is a singleton.
 	
-	public static Lift lift = null;
+	private static Lift lift = null;
 	
 	/**
 	* Get reference to the single instance of this class shared by any caller of
