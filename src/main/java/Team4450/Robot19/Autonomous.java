@@ -39,7 +39,7 @@ public class Autonomous
 		
 		lift.enable();				// put lift in initial configuration.
 		
-		Devices.gearBox.enable();	// set low speed.
+		Devices.gearBox.enable();	// set initial condition.
 		
 		Util.consoleLog("Automomous created!");
 	}

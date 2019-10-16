@@ -20,7 +20,8 @@ public abstract class SubSystem
 	
 	/*
 	 * Called when the subsystem instance is released. All resources that
-	 * need to be released should be released.
+	 * need to be released should be released and singleton variable set
+	 * to null.
 	 */
 	abstract void dispose();
 	
